@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth Premium V21</title>
+    <title>NaraBooth Templates V27</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff7675; --bg: #0f1115; --yellow: #feca57; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        .container { width: 100%; max-width: 450px; background: #1a1c23; padding: 25px; border-radius: 40px; border: 2px solid #333; text-align: center; position: relative; }
+        :root { --bg: #0f1115; --accent: #ff7675; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         
-        .header h1 { margin: 0; font-size: 28px; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-        .header p { font-size: 10px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 20px; }
+        .container { width: 100%; max-width: 450px; background: #1a1c23; padding: 20px; border-radius: 40px; border: 2px solid #333; text-align: center; }
+        .header h1 { margin: 0; font-size: 26px; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        
+        /* Kamera Box */
+        .cam-box { position: relative; border-radius: 30px; overflow: hidden; aspect-ratio: 1/1; border: 4px solid #2d3436; margin: 20px 0; }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: brightness(1.1); }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; font-weight: 800; z-index: 10; }
+        .flash { position: absolute; inset: 0; background: white; opacity: 0; z-index: 11; pointer-events: none; }
+        .flash.active { opacity: 1; transition: 0.1s; }
 
-        .screen-container { position: relative; background: #000; border-radius: 30px; overflow: hidden; aspect-ratio: 1/1; border: 4px solid #2d3436; margin-bottom: 20px; }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: brightness(1.2) contrast(1.1); }
-        
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 100; color: white; }
-        .flash { position: absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; pointer-events:none; z-index:101; }
-        .flash-active { opacity:1; transition: 0.1s; }
-        
-        .sticker-box { display: flex; gap: 12px; overflow-x: auto; padding: 10px; background: #111; border-radius: 20px; margin-bottom: 15px; border: 1px solid #333; }
-        .sticker-item { font-size: 32px; cursor: pointer; }
+        /* Template Selector */
+        .template-label { display: block; margin-bottom: 10px; font-weight: 700; color: #aaa; font-size: 12px; }
+        .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .temp-btn { padding: 12px 5px; border-radius: 15px; border: 2px solid #333; background: #252830; color: white; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.3s; }
+        .temp-btn.active { border-color: var(--accent); background: rgba(255,118,117,0.1); }
 
-        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675, #d63031); color: white; border: none; padding: 20px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(214, 48, 49, 0.4); }
-        
-        canvas { max-width: 100%; border-radius: 25px; margin-top: 20px; display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
+        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675, #d63031); color: white; border: none; padding: 20px; border-radius: 22px; font-size: 18px; font-weight: 800; cursor: pointer; }
+        #startBtn:disabled { opacity: 0.5; }
 
-        /* Popup Saweria / QRIS */
-        .qris-popup { display: none; margin-top: 25px; padding: 20px; background: rgba(254, 202, 87, 0.1); border: 2px dashed var(--yellow); border-radius: 30px; animation: slideIn 0.5s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .saweria-link { background: var(--yellow); color: #2d3436; text-decoration: none; font-weight: 800; padding: 15px 30px; border-radius: 15px; display: inline-block; margin-top: 10px; font-size: 14px; box-shadow: 0 5px 15px rgba(254, 202, 87, 0.3); }
+        canvas { width: 100%; border-radius: 25px; margin-top: 25px; display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .btn-save { background: #00b894; color: white; border: none; padding: 20px; border-radius: 20px; width: 100%; margin-top: 15px; display: none; font-weight: 800; cursor: pointer; }
+
+        .footer { display: none; margin-top: 25px; padding: 15px; border-radius: 20px; background: rgba(255,255,255,0.03); font-size: 11px; border: 1px dashed #444; }
     </style>
 </head>
 <body>
@@ -40,138 +40,131 @@
 <div class="container">
     <div class="header">
         <h1>NARA BOOTH</h1>
-        <p>V21 BRIGHT & PROFIT MODE</p>
+        <p style="font-size: 9px; opacity: 0.5; letter-spacing: 2px;">V27 TEMPLATE PRO</p>
     </div>
 
-    <div class="screen-container">
+    <div class="cam-box">
         <div id="flash" class="flash"></div>
         <div id="timer" class="timer"></div>
-        <video id="webcam" autoplay playsinline></video>
+        <video id="v" autoplay playsinline></video>
     </div>
 
-    <div class="sticker-box">
-        <span class="sticker-item" onclick="addSticker('🐱')">🐱</span>
-        <span class="sticker-item" onclick="addSticker('🎀')">🎀</span>
-        <span class="sticker-item" onclick="addSticker('✨')">✨</span>
-        <span class="sticker-item" onclick="addSticker('❤️')">❤️</span>
-        <span class="sticker-item" onclick="addSticker('👑')">👑</span>
+    <span class="template-label">PILIH GAYA FRAME:</span>
+    <div class="template-grid">
+        <button class="temp-btn active" onclick="setT('cute', this)">🌸 CUTE PINK</button>
+        <button class="temp-btn" onclick="setT('sky', this)">☁️ SKY BLUE</button>
+        <button class="temp-btn" onclick="setT('dark', this)">🌑 DARK NOIR</button>
     </div>
 
-    <button id="startBtn" onclick="startSession()">📸 MULAI FOTO</button>
-    <canvas id="finalCanvas"></canvas>
-    <button id="downloadBtn" class="btn-save" onclick="downloadImage()">💾 SIMPAN FOTO</button>
+    <button id="startBtn" onclick="run()">📸 MULAI SESI FOTO</button>
+    
+    <canvas id="c"></canvas>
+    <button id="sBtn" class="save-btn" onclick="save()">💾 SIMPAN FOTO STRIP</button>
 
-    <div id="qrisPopup" class="qris-popup">
-        <h3 style="margin:0; color: var(--yellow);">Suka hasilnya? ✨</h3>
-        <p style="font-size: 11px; opacity: 0.8;">Traktir NaraStore kopi via Gopay/QRIS yuk!</p>
-        <p style="font-size: 14px; font-weight: 800; margin: 5px 0;">083825256323</p>
-        <a href="https://saweria.co/narastore0719" target="_blank" class="saweria-link">💸 BAYAR PAKAI QRIS / GOPAY</a>
+    <div id="footer" class="footer">
+        <p>Suka hasilnya? Gopay: 083825256323</p>
+        <a href="https://saweria.co/narastore0719" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:800;">💸 TRAKTIR KOPI</a>
     </div>
 </div>
 
-<audio id="beep" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-<audio id="shutter" src="https://www.soundjay.com/free-music/shutter-click-01.mp3"></audio>
-
 <script>
-const video = document.getElementById('webcam');
-const timerEl = document.getElementById('timer');
-const flashEl = document.getElementById('flash');
-const canvas = document.getElementById('finalCanvas');
-const ctx = canvas.getContext('2d');
-const startBtn = document.getElementById('startBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const qrisPopup = document.getElementById('qrisPopup');
+const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
+const btn = document.getElementById('startBtn'), sBtn = document.getElementById('sBtn'), flash = document.getElementById('flash'), timer = document.getElementById('timer');
 
-const beep = document.getElementById('beep');
-const shutter = document.getElementById('shutter');
+let shots = [], currentTemplate = 'cute';
 
-let capturedImages = [], stickers = [];
+const themes = {
+    cute: { bg: "#fff0f3", text: "#ff8fa3", accent: "🎀", extras: ["🌸", "🍓", "🧸", "✨"] },
+    sky: { bg: "#e0f2fe", text: "#0ea5e9", accent: "☁️", extras: ["🎈", "🌟", "🧊", "🫧"] },
+    dark: { bg: "#1a1a1a", text: "#ffffff", accent: "⚡", extras: ["🔥", "💀", "🎸", "🏁"] }
+};
 
-navigator.mediaDevices.getUserMedia({ 
-    video: { facingMode: "user", width: 720, height: 720 } 
-}).then(s => video.srcObject = s);
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 720, height: 720 } }).then(s => v.srcObject = s);
 
-async function startSession() {
-    capturedImages = []; stickers = [];
-    canvas.style.display = 'none'; downloadBtn.style.display = 'none';
-    qrisPopup.style.display = 'none';
-    startBtn.disabled = true;
+function setT(t, el) {
+    currentTemplate = t;
+    document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+}
+
+async function run() {
+    shots = []; c.style.display = 'none'; sBtn.style.display = 'none'; document.getElementById('footer').style.display = 'none';
+    btn.disabled = true;
 
     for(let i=0; i<4; i++) {
-        for(let c=3; c>=0; c--) {
-            timerEl.innerText = c > 0 ? c : "";
-            if(c > 0) beep.play();
+        for(let l=3; l>=0; l--) {
+            timer.innerText = l > 0 ? l : "";
             await new Promise(r => setTimeout(r, 1000));
         }
-        flashEl.classList.add('flash-active');
-        shutter.play();
-        await takeSnap();
-        setTimeout(() => flashEl.classList.remove('flash-active'), 100);
-        await new Promise(r => setTimeout(r, 500));
+        flash.classList.add('active');
+        snap();
+        setTimeout(() => flash.classList.remove('active'), 100);
+        await new Promise(r => setTimeout(r, 600));
     }
     
-    renderStrip();
-    canvas.style.display = 'block'; 
-    downloadBtn.style.display = 'block';
-    qrisPopup.style.display = 'block'; // Munculkan popup donasi
-    startBtn.disabled = false;
+    render();
+    c.style.display = 'block'; sBtn.style.display = 'block'; document.getElementById('footer').style.display = 'block';
+    btn.disabled = false;
+    c.scrollIntoView({ behavior: 'smooth' });
 }
 
-function takeSnap() {
-    return new Promise(resolve => {
-        const temp = document.createElement('canvas');
-        temp.width = 800; temp.height = 800;
-        const tCtx = temp.getContext('2d');
-        tCtx.filter = "brightness(1.1) contrast(1.1)";
-        tCtx.translate(800,0); tCtx.scale(-1,1);
-        tCtx.drawImage(video, 0, 0, 800, 800);
-        const img = new Image();
-        img.onload = () => { capturedImages.push(img); resolve(); };
-        img.src = temp.toDataURL('image/png');
-    });
+function snap() {
+    const t = document.createElement('canvas');
+    t.width = 800; t.height = 800;
+    const tc = t.getContext('2d');
+    tc.translate(800,0); tc.scale(-1,1);
+    tc.drawImage(v, 0, 0, 800, 800);
+    const img = new Image();
+    img.src = t.toDataURL('image/png');
+    shots.push(img);
 }
 
-function renderStrip() {
-    canvas.width = 600; canvas.height = 2000;
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,600,2000);
-    ctx.fillStyle = "#2d3436"; ctx.textAlign = "center";
-    ctx.font = "bold 40px 'Plus Jakarta Sans'";
+function render() {
+    const theme = themes[currentTemplate];
+    c.width = 600; c.height = 1900;
+    
+    // Background Frame
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(0,0,600,1900);
+    
+    // Watermark/Header
+    ctx.fillStyle = theme.text;
+    ctx.textAlign = "center";
+    ctx.font = "bold 35px 'Plus Jakarta Sans'";
     ctx.fillText("NARA BOOTH", 300, 80);
+    ctx.font = "20px serif";
+    ctx.fillText(theme.accent + " SPECIAL EDITION " + theme.accent, 300, 115);
 
-    capturedImages.forEach((img, i) => {
-        const y = 150 + (i * 450);
-        ctx.fillStyle = "#f1f2f6"; ctx.fillRect(45, y-5, 510, 435);
-        ctx.drawImage(img, 50, y, 500, 425);
+    shots.forEach((img, i) => {
+        const y = 160 + (i * 420);
+        
+        // Border Putih Foto
+        ctx.fillStyle = "white";
+        ctx.fillRect(45, y-5, 510, 410);
+        ctx.drawImage(img, 50, y, 500, 400);
+
+        // STIKER OTOMATIS BERDASARKAN TEMA
+        ctx.font = "55px serif";
+        // Stiker Kiri Atas
+        ctx.fillText(theme.extras[0], 65, y+45);
+        // Stiker Kanan Bawah
+        ctx.fillText(theme.extras[1], 535, y+395);
+        // Stiker Random Tengah Samping
+        ctx.font = "35px serif";
+        ctx.fillText(theme.extras[2], 25, y+200);
+        ctx.fillText(theme.extras[3], 575, y+200);
     });
-    drawStickersOnly();
+
+    // Dekorasi Paling Bawah
+    ctx.font = "40px serif";
+    ctx.fillText(theme.extras.join(" "), 300, 1860);
 }
 
-function addSticker(emoji) {
-    stickers.push({ emoji, x: 300, y: 1200 });
-    renderStrip();
-}
-
-function drawStickersOnly() {
-    ctx.font = "80px serif"; ctx.textAlign = "center";
-    stickers.forEach(s => ctx.fillText(s.emoji, s.x, s.y));
-}
-
-canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    if(stickers.length > 0) {
-        const last = stickers[stickers.length-1];
-        last.x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
-        last.y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
-        renderStrip();
-    }
-}, {passive: false});
-
-function downloadImage() {
-    const link = document.createElement('a');
-    link.download = `NaraBooth_${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+function save() {
+    const l = document.createElement('a');
+    l.download = `NaraBooth_${currentTemplate}_${Date.now()}.png`;
+    l.href = c.toDataURL('image/png');
+    l.click();
 }
 </script>
 </body>
