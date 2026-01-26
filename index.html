@@ -1,114 +1,116 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth Party V14</title>
+    <title>NaraBooth Ultra HD V17</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff7675; --bg: #0f1115; --glass: rgba(255, 255, 255, 0.07); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
+        :root { --accent: #ff7675; --bg: #0f1115; --glass: rgba(255, 255, 255, 0.08); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         
-        .container { width: 100%; max-width: 420px; background: rgba(30, 32, 38, 0.85); backdrop-filter: blur(25px); padding: 25px; border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
+        .container { width: 100%; max-width: 500px; background: #1a1c23; padding: 25px; border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); border: 2px solid #333; }
         
-        .header { text-align: left; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 26px; font-weight: 800; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .screen { position: relative; background: #000; border-radius: 28px; overflow: hidden; aspect-ratio: 4/3; border: 2px solid #333; box-shadow: 0 0 20px rgba(255,118,117,0.1); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 800; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+
+        /* Kamera Ukuran Besar & HD */
+        .screen-container { position: relative; background: #000; border-radius: 30px; overflow: hidden; aspect-ratio: 1/1; border: 4px solid #2d3436; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 100; color: white; text-shadow: 0 5px 30px rgba(0,0,0,0.8); }
         
-        .flash-active { background: white !important; transition: 0.1s; filter: brightness(1.5); }
+        /* Efek Flash Cuma di Preview Kamera */
+        .flash-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 99; }
+        .flash-active { opacity: 1; transition: 0.1s; }
 
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .control-item { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 18px; font-weight: 700; outline: none; transition: 0.3s; }
+        .control-item { background: var(--glass); border: 1px solid #444; color: white; padding: 15px; border-radius: 18px; font-weight: 700; outline: none; }
 
-        .sticker-box { display: flex; gap: 12px; overflow-x: auto; padding: 12px; background: var(--glass); border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .sticker-item { font-size: 30px; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
-        .sticker-item:active { transform: scale(1.4); }
+        .sticker-box { display: flex; gap: 15px; overflow-x: auto; padding: 15px; background: #111; border-radius: 20px; margin-bottom: 20px; border: 1px solid #333; }
+        .sticker-item { font-size: 35px; cursor: pointer; transition: 0.2s; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
 
-        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675 0%, #d63031 100%); color: white; border: none; padding: 20px; border-radius: 22px; font-size: 17px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(214, 48, 49, 0.4); transition: 0.3s; }
-        #startBtn:active { transform: scale(0.95); }
-        #startBtn:disabled { background: #444; opacity: 0.7; }
-
-        canvas { max-width: 100%; border-radius: 20px; margin-top: 25px; display: none; touch-action: none; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
-        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 20px; width: 100%; margin-top: 15px; display: none; font-weight: 800; box-shadow: 0 10px 20px rgba(0,184,148,0.2); }
+        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675 0%, #d63031 100%); color: white; border: none; padding: 22px; border-radius: 25px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(214, 48, 49, 0.4); margin-bottom: 10px; }
+        #startBtn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .saweria-btn { background: #feca57; color: #2d3436; text-decoration: none; font-weight: 800; padding: 14px 28px; border-radius: 18px; display: inline-block; margin-top: 25px; box-shadow: 0 8px 20px rgba(254, 202, 87, 0.3); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 8px 20px rgba(254, 202, 87, 0.3); } 50% { transform: scale(1.05); box-shadow: 0 12px 30px rgba(254, 202, 87, 0.5); } 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(254, 202, 87, 0.3); } }
+        canvas { max-width: 100%; border-radius: 20px; margin-top: 25px; display: none; touch-action: none; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        .btn-save { background: #00b894; color: white; border: none; padding: 20px; border-radius: 20px; width: 100%; margin-top: 15px; display: none; font-weight: 800; cursor: pointer; }
+        
+        .saweria-btn { background: #feca57; color: #2d3436; text-decoration: none; font-weight: 800; padding: 15px 30px; border-radius: 20px; display: inline-block; box-shadow: 0 8px 25px rgba(254, 202, 87, 0.4); animation: pulse 2s infinite; font-size: 15px; margin-top: 20px; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>NARABOOTH</h1>
-        <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">V14 PARTY • BY APONGSKY</p>
+        <h1>NARA BOOTH</h1>
+        <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">ULTRA HD • CLEAN EDITION</p>
     </div>
 
-    <div class="screen">
+    <div class="screen-container">
+        <div id="flash" class="flash-effect"></div>
         <div id="timer" class="timer"></div>
         <video id="webcam" autoplay playsinline></video>
     </div>
 
     <div class="controls">
         <select id="filterSelect" class="control-item">
-            <option value="none">Pure Studio</option>
-            <option value="brightness(1.1) saturate(1.2)">Korean Glow</option>
-            <option value="grayscale(100%) contrast(1.2)">Deep Noir</option>
-            <option value="sepia(0.2) brightness(1.1)">Retro Film</option>
+            <option value="none">4K Natural</option>
+            <option value="brightness(1.1) contrast(1.1)">Studio Glow</option>
+            <option value="grayscale(100%) contrast(1.2)">Noir Edition</option>
+            <option value="saturate(1.4)">Ultra Vivid</option>
         </select>
         <input type="color" id="frameColor" class="control-item" value="#ffffff" style="padding: 5px;">
     </div>
 
     <div class="sticker-box">
-        <span class="sticker-item" onclick="addSticker('❤️')">❤️</span>
-        <span class="sticker-item" onclick="addSticker('✨')">✨</span>
-        <span class="sticker-item" onclick="addSticker('🎀')">🎀</span>
         <span class="sticker-item" onclick="addSticker('🐱')">🐱</span>
-        <span class="sticker-item" onclick="addSticker('🔥')">🔥</span>
+        <span class="sticker-item" onclick="addSticker('🎀')">🎀</span>
+        <span class="sticker-item" onclick="addSticker('✨')">✨</span>
+        <span class="sticker-item" onclick="addSticker('❤️')">❤️</span>
+        <span class="sticker-item" onclick="addSticker('🐻')">🐻</span>
+        <span class="sticker-item" onclick="addSticker('👑')">👑</span>
+        <span class="sticker-item" onclick="addSticker('🍭')">🍭</span>
     </div>
 
-    <button id="startBtn" onclick="startSession()">📸 CAPTURE THE PARTY</button>
+    <button id="startBtn" onclick="startSession()">📸 START SESSION</button>
 
     <canvas id="finalCanvas"></canvas>
-    <button id="downloadBtn" class="btn-save" onclick="downloadImage()">💾 DOWNLOAD TO GALLERY</button>
+    <button id="downloadBtn" class="btn-save" onclick="downloadImage()">💾 SIMPAN FOTO HD</button>
 
     <div style="text-align: center;">
-        <a href="https://saweria.co/narastore0719" target="_blank" class="saweria-btn">☕ DUKUNG NARASTORE (SAWERIA)</a>
+        <a href="https://saweria.co/narastore0719" target="_blank" class="saweria-btn">☕ SUPPORT VIA SAWERIA</a>
     </div>
 </div>
 
-<audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-<audio id="beepSound" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-<audio id="shutterSound" src="https://www.soundjay.com/free-music/shutter-click-01.mp3"></audio>
-<audio id="cheerSound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+<audio id="beep" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
+<audio id="shutter" src="https://www.soundjay.com/free-music/shutter-click-01.mp3"></audio>
+<audio id="cheer" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
 <script>
 const video = document.getElementById('webcam');
 const timerEl = document.getElementById('timer');
+const flashEl = document.getElementById('flash');
 const canvas = document.getElementById('finalCanvas');
 const ctx = canvas.getContext('2d');
 const startBtn = document.getElementById('startBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 
-const bgMusic = document.getElementById('bgMusic');
-const beep = document.getElementById('beepSound');
-const shutter = document.getElementById('shutterSound');
-const cheer = document.getElementById('cheerSound');
+const beep = document.getElementById('beep');
+const shutter = document.getElementById('shutter');
+const cheer = document.getElementById('cheer');
 
 let capturedImages = [], stickers = [];
 
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(s => video.srcObject = s);
+// Request Kamera Kualitas Tertinggi
+navigator.mediaDevices.getUserMedia({ 
+    video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1920 } } 
+}).then(s => video.srcObject = s);
 
 async function startSession() {
     capturedImages = []; stickers = [];
     canvas.style.display = 'none'; downloadBtn.style.display = 'none';
     startBtn.disabled = true;
-    
-    // Play Background Music (Volume pelan biar enak)
-    bgMusic.volume = 0.25;
-    bgMusic.play().catch(e => console.log("Music blocked until user interacts"));
 
     for(let i=0; i<4; i++) {
         for(let c=3; c>=0; c--) {
@@ -116,60 +118,63 @@ async function startSession() {
             if(c > 0) beep.play();
             await new Promise(r => setTimeout(r, 1000));
         }
-        document.body.classList.add('flash-active');
+        
+        // Flash cuma di preview kamera
+        flashEl.classList.add('flash-active');
         shutter.play();
         takeSnap();
-        setTimeout(() => document.body.classList.remove('flash-active'), 100);
+        setTimeout(() => flashEl.classList.remove('flash-active'), 100);
+        await new Promise(r => setTimeout(r, 500));
     }
     
+    // Langsung munculin frame dengan mulus
     renderStrip();
-    canvas.style.display = 'block'; downloadBtn.style.display = 'block';
+    canvas.style.display = 'block'; 
+    downloadBtn.style.display = 'block';
     startBtn.disabled = false;
-    
-    // Stop Music & Cheer!
-    bgMusic.pause(); bgMusic.currentTime = 0;
     cheer.play();
 }
 
 function takeSnap() {
     const temp = document.createElement('canvas');
-    temp.width = 1200; temp.height = 900;
+    temp.width = 1200; temp.height = 1200;
     const tCtx = temp.getContext('2d');
     tCtx.filter = document.getElementById('filterSelect').value;
     tCtx.translate(1200,0); tCtx.scale(-1,1);
-    tCtx.drawImage(video, 0, 0, 1200, 900);
+    tCtx.drawImage(video, 0, 0, 1200, 1200);
     capturedImages.push(temp.toDataURL('image/png'));
 }
 
 function renderStrip() {
-    canvas.width = 600; canvas.height = 1950;
+    canvas.width = 800; canvas.height = 2600;
     const bg = document.getElementById('frameColor').value;
-    ctx.fillStyle = bg; ctx.fillRect(0,0,600,1950);
+    ctx.fillStyle = bg; ctx.fillRect(0,0,800,2600);
     
-    const txtCol = isDark(bg) ? "#fff" : "#2d3436";
-    ctx.fillStyle = txtCol; ctx.textAlign = "center";
-    ctx.font = "bold 42px 'Plus Jakarta Sans'"; ctx.fillText("NARABOOTH", 300, 90);
+    ctx.fillStyle = isDark(bg) ? "#fff" : "#2d3436";
+    ctx.textAlign = "center";
+    ctx.font = "bold 50px 'Plus Jakarta Sans'"; ctx.fillText("NARA BOOTH", 400, 110);
 
     capturedImages.forEach((src, i) => {
         const img = new Image();
         img.src = src;
         img.onload = () => {
-            const y = 175 + (i * 430);
-            ctx.fillStyle = "white"; ctx.fillRect(45, y-5, 510, 385);
-            ctx.drawImage(img, 50, y, 500, 375);
+            const y = 200 + (i * 580);
+            ctx.fillStyle = "white"; 
+            ctx.fillRect(95, y-5, 610, 560);
+            ctx.drawImage(img, 100, y, 600, 550);
             if(i === 3) drawStickers();
         };
     });
 }
 
 function addSticker(emoji) {
-    stickers.push({ emoji, x: 300, y: 1000 });
+    stickers.push({ emoji, x: 400, y: 1500 });
     drawStickers();
 }
 
 function drawStickers() {
     renderStrip();
-    ctx.font = "75px serif";
+    ctx.font = "100px serif";
     stickers.forEach(s => ctx.fillText(s.emoji, s.x, s.y));
 }
 
@@ -185,8 +190,8 @@ canvas.addEventListener('touchmove', e => {
 
 function downloadImage() {
     const link = document.createElement('a');
-    link.download = `NaraBooth_V14_${Date.now()}.png`;
-    link.href = canvas.toDataURL();
+    link.download = `NaraBooth_HD_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
     link.click();
 }
 
