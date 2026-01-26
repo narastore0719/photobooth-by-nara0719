@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APONGSKY v40 | GRAND FINALE</title>
+    <title>APONGSKY v40.1 | GRAND FINALE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Space+Grotesk:wght@300;700&display=swap');
@@ -11,7 +11,6 @@
         body { background: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; }
         
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
-        .gradient-text { background: linear-gradient(90deg, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .cam-frame { position: relative; border-radius: 60px; padding: 8px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); }
         .cam-inner { border-radius: 52px; overflow: hidden; position: relative; background: #000; }
@@ -23,9 +22,11 @@
         .btn-finale { background: #fff; color: #000; font-family: 'Syne'; font-weight: 800; border-radius: 20px; transition: 0.5s; }
         .btn-finale:hover { background: #00f2ea; transform: scale(1.02); box-shadow: 0 0 50px rgba(0,242,234,0.4); }
 
-        #shutter { position: fixed; inset: 0; background: white; z-index: 1000; opacity: 0; pointer-events: none; }
+        #shutter { position: fixed; inset: 0; background: white; z-index: 9999; opacity: 0; pointer-events: none; }
         .shutter-on { animation: shut 0.3s ease-out; }
         @keyframes shut { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+        .timer-btn.active { background: #00f2ea; color: #000; border-color: #00f2ea; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -37,15 +38,21 @@
 <div class="max-w-[1400px] w-full grid grid-cols-1 lg:grid-cols-12 gap-10 no-print">
     <div class="lg:col-span-3 space-y-6">
         <div class="glass p-8 rounded-[40px]">
-            <h1 class="text-5xl font-black italic tracking-tighter leading-none mb-2 Syne">APONGSKY</h1>
-            <p class="text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase mb-8">Ultimate v40.0</p>
+            <h1 class="text-5xl font-black italic tracking-tighter leading-none mb-2" style="font-family: 'Syne'">APONGSKY</h1>
+            <p class="text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase mb-8">Ultimate v40.1</p>
             
-            <div class="space-y-4">
-                <p class="text-[10px] font-bold opacity-20 uppercase">Config</p>
-                <input type="text" id="tag" placeholder="SESSION TAG..." class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-xs outline-none focus:border-white transition">
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="setTimer(3)" class="py-3 rounded-xl border border-white/10 text-[10px] font-bold hover:bg-white/10">3s</button>
-                    <button onclick="setTimer(5)" class="py-3 rounded-xl border border-white/10 text-[10px] font-bold hover:bg-white/10">5s</button>
+            <div class="space-y-6">
+                <div>
+                    <p class="text-[10px] font-bold opacity-20 uppercase mb-3">Caption</p>
+                    <input type="text" id="tag" placeholder="NAME / DATE" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-xs outline-none focus:border-white transition">
+                </div>
+                
+                <div>
+                    <p class="text-[10px] font-bold opacity-20 uppercase mb-3">Timer</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setTimer(3)" id="t3" class="timer-btn active py-3 rounded-xl border border-white/10 text-[10px] font-bold transition">3s</button>
+                        <button onclick="setTimer(5)" id="t5" class="timer-btn py-3 rounded-xl border border-white/10 text-[10px] font-bold transition">5s</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,11 +66,11 @@
                 <div id="countdown" class="absolute inset-0 flex items-center justify-center text-[220px] font-bold text-white hidden z-50"></div>
             </div>
         </div>
-        <button onclick="startSession()" id="snap-btn" class="btn-finale w-full mt-10 py-8 text-4xl italic tracking-tighter uppercase">START GRAND SESSION</button>
+        <button onclick="startSession()" id="snap-btn" class="btn-finale w-full mt-10 py-8 text-4xl italic tracking-tighter uppercase">START SESSION 📸</button>
     </div>
 
     <div class="lg:col-span-3">
-        <div class="glass p-6 rounded-[40px] h-full">
+        <div class="glass p-6 rounded-[40px] h-full flex flex-col">
             <p class="text-[10px] font-bold opacity-20 text-center mb-6 uppercase tracking-widest">Master Roll</p>
             <div id="gallery" class="grid grid-cols-2 gap-3 overflow-y-auto max-h-[500px]"></div>
         </div>
@@ -77,19 +84,30 @@
             <canvas id="canvas" class="relative w-[300px] md:w-[350px] shadow-[0_50px_100px_rgba(0,0,0,0.5)] bg-white p-2"></canvas>
         </div>
         
-        <div class="flex-1 space-y-12">
+        <div class="flex-1 space-y-8">
             <div>
-                <h2 class="text-8xl font-black italic tracking-tighter leading-none mb-4 Syne">THE<br>LEGACY.</h2>
-                <p class="text-sm opacity-40 leading-relaxed font-light">Sesi v40 selesai. Foto lo udah diproses pake engine rendering tertinggi. Siap untuk dipublikasikan.</p>
+                <h2 class="text-8xl font-black italic tracking-tighter leading-none mb-4" style="font-family: 'Syne'">THE<br>LEGACY.</h2>
+                <p class="text-sm opacity-40 leading-relaxed font-light">Sesi v40.1 selesai. Siap dipublikasikan.</p>
             </div>
             
             <div class="flex flex-col gap-4">
                 <button onclick="window.print()" class="py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-cyan-400 transition">Print Master Strip</button>
                 <button onclick="download()" class="py-6 border border-white/10 rounded-2xl font-black text-xs uppercase hover:bg-white/5 transition">Download Digital HQ</button>
-                <button onclick="location.reload()" class="py-4 opacity-20 text-[10px] font-bold uppercase hover:opacity-100 transition">New Evolution</button>
+                
+                <a href="https://saweria.co/apongsky73" target="_blank" class="py-4 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] text-center hover:bg-yellow-400 hover:text-black transition-all">
+                    ☕ Traktir Kopi via Saweria
+                </a>
+
+                <button onclick="location.reload()" class="py-4 opacity-20 text-[10px] font-bold uppercase hover:opacity-100 transition">Discard & New Session</button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="fixed bottom-4 left-0 right-0 text-center no-print">
+    <a href="https://saweria.co/apongsky73" target="_blank" class="text-[9px] font-bold opacity-20 hover:opacity-100 transition uppercase tracking-[0.5em]">
+        APONGSKY v40.1 • Support via Saweria
+    </a>
 </div>
 
 <script>
@@ -97,17 +115,27 @@
     const gallery = document.getElementById('gallery');
     const countdownEl = document.getElementById('countdown');
     const shutter = document.getElementById('shutter');
+    
+    // SFX
+    const sfxBeep = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
     const sfxSnap = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3');
+    const sfxDone = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
     
     let poses = [];
     let selectedTimer = 3;
 
     async function init() {
-        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
-        video.srcObject = s;
+        try {
+            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
+            video.srcObject = s;
+        } catch(e) { alert("Izinkan akses kamera!"); }
     }
 
-    function setTimer(s) { selectedTimer = s; }
+    function setTimer(s) { 
+        selectedTimer = s;
+        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('t' + s).classList.add('active');
+    }
 
     async function startSession() {
         poses = []; gallery.innerHTML = '';
@@ -118,6 +146,7 @@
             countdownEl.classList.remove('hidden');
             while(c > 0) {
                 countdownEl.innerText = c;
+                sfxBeep.play();
                 await new Promise(r => setTimeout(r, 1000));
                 c--;
             }
@@ -125,6 +154,7 @@
             snap();
             if(i < 4) await new Promise(r => setTimeout(r, 1200));
         }
+        sfxDone.play();
         render();
     }
 
@@ -136,13 +166,11 @@
         const temp = document.createElement('canvas');
         temp.width = 1080; temp.height = 800;
         const ctx = temp.getContext('2d');
-        
-        // AUTO HDR ENGINE
-        ctx.filter = 'contrast(1.1) saturate(1.2) brightness(1.05)';
+        ctx.filter = 'contrast(1.1) saturate(1.1)';
         ctx.translate(1080, 0); ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0, 1080, 800);
         
-        const data = temp.toDataURL('image/jpeg', 1.0);
+        const data = temp.toDataURL('image/jpeg', 0.9);
         poses.push(data);
         const img = document.createElement('img');
         img.src = data; img.className = "rounded-2xl border border-white/10 shadow-2xl";
@@ -153,31 +181,28 @@
         const cv = document.getElementById('canvas');
         const ctx = cv.getContext('2d');
         cv.width = 1000; cv.height = 1600;
-        
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, 1000, 1600);
 
         for(let i=0; i<4; i++) {
             const img = new Image(); img.src = poses[i];
             await new Promise(r => img.onload = r);
-            
             ctx.fillStyle = "#fff";
-            // Double Strip Pro Layout
             ctx.fillRect(40, 40 + (i*360), 420, 320);
             ctx.drawImage(img, 45, 45 + (i*360), 410, 310);
             ctx.fillRect(540, 40 + (i*360), 420, 320);
             ctx.drawImage(img, 545, 45 + (i*360), 410, 310);
         }
 
-        ctx.textAlign = 'center'; ctx.fillStyle = '#666'; ctx.font = '700 30px Space Grotesk';
-        ctx.fillText(document.getElementById('tag').value || "APONGSKY ULTIMATE v40", 500, 1530);
+        ctx.textAlign = 'center'; ctx.fillStyle = '#444'; ctx.font = '700 25px Space Grotesk';
+        ctx.fillText(document.getElementById('tag').value || "APONGSKY ULTIMATE v40.1", 500, 1530);
         
         document.getElementById('modal').style.display = 'flex';
     }
 
     function download() {
         const a = document.createElement('a');
-        a.download = `apongsky-final-v40.png`;
+        a.download = `apongsky-hq-${Date.now()}.png`;
         a.href = document.getElementById('canvas').toDataURL();
         a.click();
     }
