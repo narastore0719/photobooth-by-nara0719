@@ -3,38 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth MultiStyle V37</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Plus+Jakarta+Sans:wght@400;800&family=Courier+Prime&display=swap" rel="stylesheet">
+    <title>NaraBooth Viral V39</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Plus+Jakarta+Sans:wght@400;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0d0d0d; --accent: #fff; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        :root { --bg: #0d0d0d; --text: #f0f0f0; --accent: #d4af37; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 480px; background: #151515; padding: 20px; border-radius: 35px; border: 1px solid #222; text-align: center; }
         
+        /* Camera View */
         .cam-box { position: relative; border-radius: 25px; overflow: hidden; aspect-ratio: 1/1; border: 2px solid #333; margin-bottom: 20px; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 10; }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 10; color: white; }
         .flash { position: absolute; inset: 0; background: white; opacity: 0; z-index: 11; pointer-events: none; }
         .flash.active { opacity: 1; transition: 0.1s; }
 
-        /* Diverse Selector */
-        .selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
+        /* Template Selector */
+        .selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
         .selector::-webkit-scrollbar { display: none; }
-        .t-card { min-width: 90px; padding: 12px 5px; border-radius: 15px; border: 2px solid #333; background: #222; cursor: pointer; transition: 0.3s; }
-        .t-card.active { border-color: #fff; background: #333; }
-        .t-card span { font-size: 10px; font-weight: 800; display: block; }
+        .t-item { min-width: 90px; padding: 12px 5px; border-radius: 15px; border: 2px solid #333; background: #222; cursor: pointer; transition: 0.3s; }
+        .t-item.active { border-color: var(--accent); background: rgba(212, 175, 55, 0.1); }
+        .t-item span { display: block; font-size: 10px; font-weight: 800; color: #fff; }
 
         #startBtn { width: 100%; background: #fff; color: #000; border: none; padding: 20px; border-radius: 20px; font-size: 16px; font-weight: 800; cursor: pointer; }
-        canvas { width: 100%; border-radius: 15px; margin-top: 25px; display: none; }
-        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
+        canvas { width: 100%; border-radius: 15px; margin-top: 25px; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .btn-save { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="margin-bottom: 15px;">
-        <h1 style="margin:0; font-size: 20px; font-weight: 800; letter-spacing: 2px;">NARA MULTI-STUDIO</h1>
-        <p style="font-size: 8px; opacity: 0.5;">5 PREMIUM STYLES V37</p>
-    </div>
+    <h1 style="margin:0; font-size: 20px; letter-spacing: 3px; color:var(--accent)">NARA VIRAL BOOTH</h1>
+    <p style="font-size: 8px; opacity: 0.4; margin-bottom: 15px;">PREMIUM STRIP V39</p>
 
     <div class="cam-box">
         <div id="flash" class="flash"></div>
@@ -43,37 +42,37 @@
     </div>
 
     <div class="selector">
-        <div class="t-card active" onclick="setT('macan', this)"><span>🐆 MACAN</span></div>
-        <div class="t-card" onclick="setT('noir', this)"><span>🖤 NOIR</span></div>
-        <div class="t-card" onclick="setT('soft', this)"><span>🌸 SOFT</span></div>
-        <div class="t-card" onclick="setT('vintage', this)"><span>🎞️ VINTAGE</span></div>
-        <div class="t-card" onclick="setT('y2k', this)"><span>🌈 Y2K</span></div>
+        <div class="t-item active" onclick="setT('leopard', this)"><span>🐆 LEOPARD</span></div>
+        <div class="t-item" onclick="setT('news', this)"><span>📰 KORAN</span></div>
+        <div class="t-item" onclick="setT('y2k', this)"><span>💖 Y2K</span></div>
+        <div class="t-item" onclick="setT('minimal', this)"><span>⚪ CLEAN</span></div>
+        <div class="t-item" onclick="setT('noir', this)"><span>🌑 NOIR</span></div>
     </div>
 
-    <button id="startBtn" onclick="run()">TAKE 4 PHOTOS</button>
+    <button id="startBtn" onclick="run()">Mulai Foto (4x)</button>
     <canvas id="c"></canvas>
-    <button id="sBtn" class="btn-save" onclick="save()">DOWNLOAD STRIP</button>
+    <button id="sBtn" class="btn-save" onclick="save()">Simpan ke Galeri</button>
 </div>
 
 <script>
 const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
 const btn = document.getElementById('startBtn'), sBtn = document.getElementById('sBtn'), flash = document.getElementById('flash'), timer = document.getElementById('timer');
 
-let shots = [], currentT = 'macan';
+let shots = [], currentT = 'leopard';
 
-const config = {
-    macan: { bg: "#c5a059", txt: "#fff", label: "DAILY SPACE STUDIO", font: "italic bold 35px 'Playfair Display'" },
-    noir: { bg: "#000", txt: "#fff", label: "NOIR PRIVATE", font: "800 30px 'Plus Jakarta Sans'" },
-    soft: { bg: "#f5ece5", txt: "#8b5e3c", label: "Korean Moment", font: "800 30px 'Plus Jakarta Sans'" },
-    vintage: { bg: "#d2b48c", txt: "#7f1d1d", label: "MEMORIES 1998", font: "bold 30px 'Courier Prime'" },
-    y2k: { bg: "linear-gradient", txt: "#fff", label: "VIBE CHECK", font: "800 35px 'Plus Jakarta Sans'" }
+const frames = {
+    leopard: { bg: "#c5a059", txt: "#fff", label: "GOLDEN WILD STUDIO", filter: "brightness(1.1)" },
+    news: { bg: "#f0ece2", txt: "#1a1a1a", label: "DAILY NEWS VINTAGE", filter: "grayscale(1) contrast(1.1)" },
+    y2k: { bg: "#ff758c", txt: "#fff", label: "Y2K VIBE ONLY", filter: "saturate(1.4)" },
+    minimal: { bg: "#ffffff", txt: "#333", label: "MINIMALIST MOMENT", filter: "brightness(1.05)" },
+    noir: { bg: "#111", txt: "#fff", label: "DARK PRIVATE ROOM", filter: "grayscale(1) contrast(1.3)" }
 };
 
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(s => v.srcObject = s);
 
 function setT(t, el) {
     currentT = t;
-    document.querySelectorAll('.t-card').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.t-item').forEach(x => x.classList.remove('active'));
     el.classList.add('active');
 }
 
@@ -98,23 +97,17 @@ async function run() {
 }
 
 function render() {
-    const cfg = config[currentT];
+    const cfg = frames[currentT];
     c.width = 600; c.height = 2400;
     
-    // Background handling
-    if(currentT === 'y2k') {
-        let grad = ctx.createLinearGradient(0,0,0,2400);
-        grad.addColorStop(0, "#ff0080"); grad.addColorStop(1, "#00bfff");
-        ctx.fillStyle = grad;
-    } else {
-        ctx.fillStyle = cfg.bg;
-    }
+    // Background frame
+    ctx.fillStyle = cfg.bg;
     ctx.fillRect(0,0,600,2400);
 
-    // Decorate Leopard only if selected
-    if(currentT === 'macan') {
+    // Leopard Pattern Generator (Khusus Macan)
+    if(currentT === 'leopard') {
         ctx.fillStyle = "#3d2b1f";
-        for(let i=0; i<80; i++) {
+        for(let i=0; i<100; i++) {
             ctx.beginPath();
             ctx.arc(Math.random()*600, Math.random()*2400, Math.random()*25, 0, Math.PI*2);
             ctx.fill();
@@ -124,37 +117,27 @@ function render() {
     shots.forEach((src, i) => {
         const img = new Image();
         img.src = src;
-        const y = 120 + (i * 540);
-        
+        const y = 100 + (i * 560);
         ctx.fillStyle = "white";
         ctx.fillRect(45, y-5, 510, 510);
         
         img.onload = () => {
-            // Apply filter for Noir & Vintage
-            if(currentT === 'noir') ctx.filter = "grayscale(1) contrast(1.2)";
-            if(currentT === 'vintage') ctx.filter = "sepia(0.5) contrast(1.1)";
-            
+            ctx.filter = cfg.filter;
             ctx.drawImage(img, 50, y, 500, 500);
             ctx.filter = "none";
-
-            if(currentT === 'vintage') {
-                ctx.fillStyle = "#ff4500";
-                ctx.font = "20px 'Courier Prime'";
-                ctx.fillText("'26 01 26", 450, y+480);
-            }
         };
     });
 
     setTimeout(() => {
         ctx.fillStyle = cfg.txt;
         ctx.textAlign = "center";
-        ctx.font = cfg.font;
-        ctx.fillText(cfg.label, 300, 2300);
+        ctx.font = "italic bold 40px 'Playfair Display'";
+        ctx.fillText(cfg.label, 300, 2320);
         
         c.style.display = 'block'; sBtn.style.display = 'block';
         btn.disabled = false;
         c.scrollIntoView({ behavior: 'smooth' });
-    }, 500);
+    }, 600);
 }
 
 function save() {
