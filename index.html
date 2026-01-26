@@ -2,167 +2,201 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraStore0719 - PhotoBooth V40</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APONGSKY v10.5 | Custom Name & Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --bg: #0d0d0d; --panel: #151515; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 450px; background: var(--panel); padding: 20px; border-radius: 30px; border: 1px solid #222; text-align: center; }
-        
-        /* Cam View */
-        .cam-box { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1/1; border: 2px solid #333; margin-bottom: 15px; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; font-weight: 800; z-index: 10; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .flash { position: absolute; inset: 0; background: white; opacity: 0; z-index: 11; pointer-events: none; }
-        .flash.active { opacity: 1; transition: 0.1s; }
-
-        /* Color Selector */
-        .color-label { font-size: 10px; font-weight: 800; color: #666; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-        .selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
-        .selector::-webkit-scrollbar { display: none; }
-        .dot { min-width: 45px; height: 45px; border-radius: 12px; border: 2px solid #333; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: rgba(0,0,0,0.3); }
-        .dot.active { border-color: white; transform: scale(1.1); color: rgba(0,0,0,0.6); }
-
-        #startBtn { width: 100%; background: #fff; color: #000; border: none; padding: 18px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; }
-        canvas { width: 100%; border-radius: 15px; margin-top: 20px; display: none; }
-        .btn-save { background: #444; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: 10px; display: none; font-weight: 800; }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { font-family: 'Space Grotesk', sans-serif; background: #020617; color: #f8fafc; min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .camera-view { transform: scaleX(-1); object-fit: cover; border-radius: 24px; }
+        .btn-primary { background: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%); transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(56, 189, 248, 0.5); }
+        .flash-active { animation: flashAnim 0.3s ease-out forwards; }
+        @keyframes flashAnim { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        /* Filter Presets */
+        .filter-none { filter: contrast(1.1) brightness(1.05); }
+        .filter-vintage { filter: sepia(0.4) contrast(1.1) brightness(0.9); }
+        .filter-dreamy { filter: saturate(1.4) hue-rotate(-10deg) brightness(1.1); }
+        .filter-noir { filter: grayscale(1) contrast(1.4); }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center py-6 px-4">
 
-<div class="container">
-    <div style="margin-bottom: 15px;">
-        <h2 style="margin:0; letter-spacing: 1px; font-size: 18px;">NARASTORE0719</h2>
-        <p style="font-size: 8px; opacity: 0.5; margin: 0;">PHOTO BOOTH WITH APONGSKY</p>
+    <div id="flash" class="fixed inset-0 bg-white z-[100] pointer-events-none opacity-0"></div>
+
+    <header class="text-center mb-6">
+        <h1 class="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">APONGSKY</h1>
+        <p class="text-sky-200/50 tracking-[0.2em] text-[10px] uppercase">v10.5 Custom Edition</p>
+    </header>
+
+    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-3 space-y-4">
+            <div class="glass p-5 rounded-[30px]">
+                <h3 class="text-xs font-bold text-sky-400 uppercase tracking-widest mb-4 italic">1. Custom Text</h3>
+                <input type="text" id="user-text" placeholder="Ketik namamu di sini..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 transition shadow-inner">
+                <p class="text-[10px] text-slate-500 mt-2">*Akan muncul di hasil foto</p>
+            </div>
+
+            <div class="glass p-5 rounded-[30px]">
+                <h3 class="text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">2. Color Grade</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="updateFilter('none')" class="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px]">NATURAL</button>
+                    <button onclick="updateFilter('vintage')" class="py-2.5 rounded-xl bg-orange-900/20 hover:bg-orange-900/40 text-[10px]">VINTAGE</button>
+                    <button onclick="updateFilter('dreamy')" class="py-2.5 rounded-xl bg-blue-900/20 hover:bg-blue-900/40 text-[10px]">DREAMY</button>
+                    <button onclick="updateFilter('noir')" class="py-2.5 rounded-xl bg-gray-900/40 hover:bg-gray-900/60 text-[10px]">NOIR</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-6 flex flex-col items-center">
+            <div class="relative w-full aspect-[3/4] max-h-[550px] rounded-[40px] overflow-hidden shadow-2xl border-4 border-white/5">
+                <video id="webcam" class="camera-view w-full h-full filter-none" autoplay playsinline></video>
+                <div id="frame-ui" class="absolute inset-0 border-[20px] border-white pointer-events-none transition-all"></div>
+                <div id="timer" class="absolute inset-0 flex items-center justify-center text-[150px] font-bold text-white hidden"></div>
+            </div>
+            <button onclick="initCapture()" class="btn-primary mt-6 px-12 py-4 rounded-full text-lg font-bold w-full lg:w-auto">CAPTURE NOW</button>
+        </div>
+
+        <div class="lg:col-span-3">
+            <div class="glass p-6 rounded-[30px] border-blue-500/30">
+                <h3 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">Support Dev</h3>
+                <p class="text-[11px] text-slate-400 mb-4 leading-relaxed italic">Suka hasilnya? Traktir dev kopi yuk!</p>
+                <div class="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/20 mb-2">
+                    <p class="text-[9px] text-blue-300 font-bold mb-1 tracking-wider uppercase">GOPAY / DANA</p>
+                    <p class="text-lg font-bold text-white tracking-widest">083825256323</p>
+                </div>
+                <p class="text-[10px] text-center text-slate-500">Terima kasih orang baik! ❤️</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black/98 hidden z-[200] flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass p-6 rounded-[40px] max-w-4xl w-full flex flex-col md:flex-row gap-8 items-center my-auto">
+            <canvas id="outCanvas" class="w-full max-w-[300px] rounded-2xl shadow-2xl border border-white/10"></canvas>
+            
+            <div class="flex-1 space-y-5">
+                <div>
+                    <h2 class="text-3xl font-bold">Yeay! Captured.</h2>
+                    <p class="text-slate-400 text-sm italic">Foto sudah diproses dengan namamu.</p>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <div class="bg-white p-3 rounded-2xl">
+                        <div id="qr-loading" class="w-[120px] h-[120px] flex items-center justify-center text-slate-900 text-[10px] animate-pulse">CLOUDIZING...</div>
+                        <img id="qr-code" src="" class="hidden w-[120px] h-[120px]">
+                    </div>
+                    <div class="flex-1 glass p-4 rounded-2xl border-yellow-500/20">
+                        <p class="text-[9px] font-bold text-yellow-500 tracking-widest uppercase">Donasi Apongsky</p>
+                        <p class="text-sm font-bold text-white mt-1">083825256323</p>
+                        <p class="text-[9px] text-slate-400 italic">Gopay / Dana / OVO</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="location.reload()" class="flex-1 py-4 rounded-full bg-white/5 font-bold hover:bg-white/10 text-xs">ULANGI</button>
+                    <a id="save-btn" download="apongsky.png" class="flex-1 py-4 rounded-full bg-sky-500 text-white font-bold hover:bg-sky-600 transition text-xs text-center">SIMPAN PNG</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="cam-box">
-        <div id="flash" class="flash"></div>
-        <div id="timer" class="timer"></div>
-        <video id="v" autoplay playsinline></video>
-    </div>
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('outCanvas');
+        const timerEl = document.getElementById('timer');
+        const flash = document.getElementById('flash');
+        
+        let currentFilter = 'none';
 
-    <span class="color-label">CHOOSE STRIP COLOR (10 COLORS)</span>
-    <div id="colorPicker" class="selector"></div>
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 1080, height: 1440 } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => alert("Kamera tidak aktif."));
 
-    <button id="startBtn" onclick="run()">START SESSION (4X)</button>
-    <canvas id="c"></canvas>
-    <button id="sBtn" class="btn-save" onclick="save()">SAVE PHOTO STRIP</button>
-</div>
-
-<script>
-const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
-const btn = document.getElementById('startBtn'), sBtn = document.getElementById('sBtn'), flash = document.getElementById('flash'), timer = document.getElementById('timer');
-
-const palette = [
-    { name: 'Latte', bg: '#f1ede4', txt: '#004274' },
-    { name: 'Rose', bg: '#e91e63', txt: '#ffffff' },
-    { name: 'Sky', bg: '#81b6c9', txt: '#00334e' },
-    { name: 'Lime', bg: '#a4c639', txt: '#1d3108' },
-    { name: 'Grape', bg: '#9c27b0', txt: '#ffffff' },
-    { name: 'Sunset', bg: '#ff5722', txt: '#ffffff' },
-    { name: 'Metal', bg: '#455a64', txt: '#cfd8dc' },
-    { name: 'Cherry', bg: '#d32f2f', txt: '#ffffff' },
-    { name: 'Lemon', bg: '#fbc02d', txt: '#3e2723' },
-    { name: 'Mint', bg: '#4db6ac', txt: '#00332e' }
-];
-
-let shots = [], currentId = 0;
-
-// Build Selector
-const picker = document.getElementById('colorPicker');
-palette.forEach((color, i) => {
-    const d = document.createElement('div');
-    d.className = `dot ${i===0?'active':''}`;
-    d.style.backgroundColor = color.bg;
-    d.innerText = color.name.toUpperCase();
-    d.onclick = () => {
-        currentId = i;
-        document.querySelectorAll('.dot').forEach(el => el.classList.remove('active'));
-        d.classList.add('active');
-    };
-    picker.appendChild(d);
-});
-
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(s => v.srcObject = s);
-
-async function run() {
-    shots = []; c.style.display = 'none'; sBtn.style.display = 'none'; btn.disabled = true;
-    for(let i=0; i<4; i++) {
-        for(let l=3; l>=0; l--) {
-            timer.innerText = l > 0 ? l : "";
-            await new Promise(r => setTimeout(r, 1000));
+        function updateFilter(f) {
+            video.className = `camera-view w-full h-full filter-${f}`;
+            currentFilter = f;
         }
-        flash.classList.add('active');
-        const t = document.createElement('canvas');
-        t.width = 1000; t.height = 1000;
-        const tc = t.getContext('2d');
-        tc.translate(1000,0); tc.scale(-1,1);
-        tc.drawImage(v, 0, 0, 1000, 1000);
-        shots.push(t.toDataURL('image/png'));
-        setTimeout(() => flash.classList.remove('active'), 100);
-        await new Promise(r => setTimeout(r, 600));
-    }
-    render();
-}
 
-function render() {
-    const theme = palette[currentId];
-    c.width = 600; c.height = 2200;
-    
-    // Background Frame
-    ctx.fillStyle = theme.bg;
-    ctx.roundRect(0, 0, 600, 2200, 40); // Rounded Corner Frame
-    ctx.fill();
+        function initCapture() {
+            let count = 3;
+            timerEl.classList.remove('hidden');
+            const countdown = setInterval(() => {
+                timerEl.innerText = count;
+                if(count === 0) {
+                    clearInterval(countdown);
+                    timerEl.classList.add('hidden');
+                    processPhoto();
+                }
+                count--;
+            }, 800);
+        }
 
-    // Logo & Header
-    ctx.fillStyle = theme.txt;
-    ctx.textAlign = "center";
-    ctx.font = "800 24px 'Plus Jakarta Sans'";
-    ctx.fillText("NARASTORE0719", 300, 180);
-    ctx.font = "400 10px 'Plus Jakarta Sans'";
-    ctx.letterSpacing = "2px";
-    ctx.fillText("PHOTO BOOTH WITH APONGSKY", 300, 205);
+        async function processPhoto() {
+            flash.classList.add('flash-active');
+            setTimeout(() => flash.classList.remove('flash-active'), 300);
 
-    shots.forEach((src, i) => {
-        const img = new Image();
-        img.src = src;
-        const y = 280 + (i * 440);
-        
-        // Photo Shadow/Border
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        ctx.fillRect(75, y+5, 450, 420);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(70, y, 460, 420);
-        
-        img.onload = () => {
-            ctx.drawImage(img, 80, y+10, 440, 400);
-        };
-    });
+            const ctx = canvas.getContext('2d');
+            canvas.width = 1200;
+            canvas.height = 1600;
 
-    setTimeout(() => {
-        // Footer Details
-        ctx.fillStyle = theme.txt;
-        ctx.font = "italic 16px 'Playfair Display'";
-        ctx.fillText("✨ Memories ✨", 300, 2080);
-        
-        ctx.font = "800 12px 'Plus Jakarta Sans'";
-        const now = new Date();
-        ctx.fillText(`${now.getDate()}.${now.getMonth()+1}.${now.getFullYear()} | NARASTORE0719`, 300, 2120);
+            // Background White Frame
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        c.style.display = 'block'; sBtn.style.display = 'block';
-        btn.disabled = false;
-        c.scrollIntoView({ behavior: 'smooth' });
-    }, 800);
-}
+            // Draw Photo
+            ctx.save();
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 60, 60, 1080, 1350); // Padding top & sides
+            ctx.restore();
 
-function save() {
-    const l = document.createElement('a');
-    l.download = `NaraStore_${palette[currentId].name}.png`;
-    l.href = c.toDataURL('image/png');
-    l.click();
-}
-</script>
+            // Watermark Apongsky
+            ctx.fillStyle = "#020617";
+            ctx.font = "bold 50px Space Grotesk";
+            ctx.textAlign = "center";
+            ctx.fillText("APONGSKY MOMENT", canvas.width/2, 1480);
+
+            // CUSTOM NAME TEXT (Hasil input user)
+            const userText = document.getElementById('user-text').value.toUpperCase() || "DIGITAL BOOTH";
+            ctx.fillStyle = "#64748b";
+            ctx.font = "30px Space Grotesk";
+            ctx.fillText(userText, canvas.width/2, 1530);
+
+            const imageData = canvas.toDataURL('image/png');
+            document.getElementById('save-btn').href = imageData;
+            document.getElementById('modal').classList.remove('hidden');
+
+            uploadToCloud(imageData);
+        }
+
+        async function uploadToCloud(base64Data) {
+            const cleanBase64 = base64Data.replace(/^data:image\/(png|jpg);base64,/, "");
+            const formData = new FormData();
+            formData.append("image", cleanBase64);
+
+            try {
+                // API KEY IMGBB DEMO
+                const response = await fetch('https://api.imgbb.com/1/upload?key=63539df4a350e93444453b34c329d47d', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                const remoteUrl = result.data.url;
+
+                const qrImg = document.getElementById('qr-code');
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(remoteUrl)}`;
+                qrImg.onload = () => {
+                    document.getElementById('qr-loading').classList.add('hidden');
+                    qrImg.classList.remove('hidden');
+                };
+            } catch (e) {
+                document.getElementById('qr-loading').innerText = "FAILED TO UPLOAD";
+            }
+        }
+    </script>
 </body>
 </html>
