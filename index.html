@@ -3,243 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APONGSKY v33.6 | Voice Over & Tags</title>
+    <title>APONGSKY v35 | ULTIMATE ENGINE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Plus+Jakarta+Sans:wght@400;800&family=Special+Elite&family=Syne:wght@800&family=Pacifico&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Plus+Jakarta+Sans:wght@800&family=Bebas+Neue&family=Syne:wght@800&display=swap');
         
-        :root { --accent: #facc15; --text-color: #fff; --bg-color: #050505; }
-        body { background: var(--bg-color); color: var(--text-color); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        :root { --accent: #facc15; }
+        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.5s; overflow-x: hidden; }
         
-        body.mode-tiger { --accent: #facc15; --bg-color: #0a0a0a; --text-color: #fff; }
-        body.mode-gemoy { --accent: #f472b6; --bg-color: #fff1f2; --text-color: #be185d; }
-        body.mode-cyber { --accent: #8b5cf6; --bg-color: #000; --text-color: #fff; }
-        body.mode-press { --accent: #475569; --bg-color: #e2e8f0; --text-color: #0f172a; }
+        body.mode-tiger { --accent: #facc15; background: #050505; }
+        body.mode-retro { --accent: #fb923c; background: #292524; }
+        body.mode-cyber { --accent: #a855f7; background: #020617; }
+        
+        .camera-ring { border: 15px solid var(--accent); border-radius: 60px; position: relative; overflow: hidden; background: #000; box-shadow: 0 0 80px rgba(0,0,0,0.6); }
+        #video { transform: scaleX(-1); object-fit: cover; width: 100%; height: 100%; transition: filter 0.3s; }
+        
+        /* Studio FX */
+        #fill-light { position: fixed; inset: 0; background: white; z-index: 100; display: none; opacity: 0.9; }
+        #shutter-flash { position: fixed; inset: 0; background: white; z-index: 1000; opacity: 0; pointer-events: none; }
+        .flash-active { animation: flash-anim 0.2s ease-out; }
+        @keyframes flash-anim { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; }
-        body.mode-gemoy .glass { background: rgba(255, 255, 255, 0.5); border: 1px solid #fbcfe8; }
-        body.mode-press .glass { background: rgba(0, 0, 0, 0.05); border: 1px solid #cbd5e1; }
+        .btn-action { background: var(--accent); color: #000; font-weight: 900; transition: 0.4s; border-radius: 20px; }
+        .btn-action:hover { transform: scale(1.05) rotate(-1deg); box-shadow: 0 0 40px var(--accent); }
         
-        .camera-ring { position: relative; padding: 12px; background: var(--accent); border-radius: 50px; transition: 0.5s; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .camera-view { transform: scaleX(-1); object-fit: cover; border-radius: 38px; }
-        
-        .btn-main { background: var(--accent); color: #000; font-weight: 900; transition: 0.4s; border-radius: 30px; text-transform: uppercase; font-style: italic; }
-        .btn-main:hover { transform: scale(1.02) translateY(-5px); box-shadow: 0 20px 40px -10px var(--accent); }
-        
-        #flash { position: fixed; inset: 0; background: white; z-index: 9999; opacity: 0; pointer-events: none; }
-        .flash-active { animation: flash-anim 0.4s ease-out; }
-        @keyframes flash-anim { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        .filter-btn { border: 2px solid rgba(255,255,255,0.1); transition: 0.3s; font-size: 10px; font-weight: 800; }
+        .filter-btn.active { border-color: var(--accent); background: var(--accent); color: #000; }
 
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 mode-tiger" id="b">
+<body class="min-h-screen p-4 md:p-8 mode-tiger">
 
-    <div id="flash"></div>
+<div id="fill-light"></div>
+<div id="shutter-flash"></div>
 
-    <div class="max-w-7xl mx-auto no-print">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-12">
-            <div>
-                <h1 class="text-7xl font-800 tracking-tighter italic" style="color: var(--accent)">APONGSKY</h1>
-                <p class="text-[10px] tracking-[0.8em] opacity-40 uppercase mt-2 text-center md:text-left">v33.6 Voice Over & Dynamic Tags</p>
-            </div>
-            <div class="mt-6 md:mt-0 flex flex-col items-center gap-2">
-                <a href="https://saweria.co/apongsky73" target="_blank" class="glass px-8 py-3 text-[10px] font-black uppercase tracking-widest border-white/20 hover:bg-white hover:text-black transition">Donate Coffee ☕</a>
-                <p class="text-[8px] opacity-50 uppercase tracking-widest font-bold">Musik akan menyala saat engine dipilih</p>
-            </div>
-        </header>
+<div class="max-w-7xl mx-auto no-print">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <div class="text-center md:text-left">
+            <h1 class="text-8xl font-black italic tracking-tighter leading-none" style="color: var(--accent)">APONGSKY<span class="text-white opacity-10">v35</span></h1>
+            <p class="text-xs font-bold tracking-[0.8em] opacity-30 uppercase mt-2">Professional Photobooth v35.0</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="cam-status" class="bg-zinc-800 border border-zinc-700 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest">Warming Up Camera...</div>
+        </div>
+    </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <aside class="lg:col-span-3 space-y-6">
-                <div class="glass p-8">
-                    <p class="text-[11px] font-black uppercase tracking-[0.3em] mb-6 opacity-50">Select Engine</p>
-                    <div class="grid grid-cols-1 gap-4">
-                        <button onclick="setEngine('tiger')" class="w-full py-4 rounded-2xl bg-yellow-500 text-black font-900 text-[10px] uppercase">🐅 Tiger Overdrive</button>
-                        <button onclick="setEngine('cyber')" class="w-full py-4 rounded-2xl bg-purple-600 text-white font-900 text-[10px] uppercase">🪐 Cyber Chrome</button>
-                        <button onclick="setEngine('gemoy')" class="w-full py-4 rounded-2xl bg-pink-400 text-white font-900 text-[10px] uppercase">🎀 Ultra Gemoy</button>
-                        <button onclick="setEngine('press')" class="w-full py-4 rounded-2xl bg-slate-700 text-white font-900 text-[10px] uppercase">📰 Vintage Press</button>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <aside class="lg:col-span-3 space-y-6">
+            <div class="bg-zinc-900/50 p-8 rounded-[45px] border border-white/5 space-y-6">
+                <div>
+                    <p class="text-[10px] font-black opacity-30 mb-4 tracking-widest uppercase text-center">Engine Theme</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="changeTheme('tiger')" class="w-full py-4 rounded-2xl bg-yellow-500 text-black font-black text-xs uppercase italic">🐅 TIGER ROAR</button>
+                        <button onclick="changeTheme('retro')" class="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-xs uppercase italic">🎞️ RETRO NOIR</button>
+                        <button onclick="changeTheme('cyber')" class="w-full py-4 rounded-2xl bg-purple-600 text-white font-black text-xs uppercase italic">🪐 CYBERPUNK</button>
                     </div>
                 </div>
-                <div class="glass p-6">
-                    <input type="text" id="tag" placeholder="ADD CAPTION..." class="w-full bg-white/10 border-none p-3 rounded-xl text-sm outline-none focus:ring-2" style="color: var(--text-color); --tw-ring-color: var(--accent);">
-                </div>
-            </aside>
 
-            <div class="lg:col-span-6 flex flex-col items-center">
-                <div class="camera-ring w-full">
-                    <div class="aspect-[3/4] bg-black rounded-[38px] relative overflow-hidden">
-                        <video id="v" class="w-full h-full camera-view" autoplay playsinline></video>
-                        <div id="count" class="absolute inset-0 flex items-center justify-center text-[200px] font-900 text-white hidden"></div>
+                <div>
+                    <p class="text-[10px] font-black opacity-30 mb-4 tracking-widest uppercase text-center">Real-time Filters</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setFilter('none')" id="f-none" class="filter-btn active py-2 rounded-xl">NORMAL</button>
+                        <button onclick="setFilter('grayscale(1)')" id="f-bw" class="filter-btn py-2 rounded-xl">B&W</button>
+                        <button onclick="setFilter('sepia(0.8) contrast(1.2)')" id="f-retro" class="filter-btn py-2 rounded-xl">VINTAGE</button>
+                        <button onclick="setFilter('hue-rotate(90deg) saturate(2)')" id="f-cyber" class="filter-btn py-2 rounded-xl">DREAMY</button>
                     </div>
                 </div>
-                <button onclick="startSession()" id="snap-btn" class="btn-main w-full mt-10 py-8 text-3xl tracking-tighter shadow-2xl">
-                    SNAP 4 PHOTOS ✨
-                </button>
             </div>
 
-            <aside class="lg:col-span-3 glass p-8">
-                <p class="text-[11px] font-black opacity-30 uppercase text-center mb-8">Roll Feed</p>
-                <div id="gallery" class="space-y-6"></div>
-            </aside>
-        </div>
-    </div>
+            <button onclick="toggleFillLight()" id="light-btn" class="w-full py-6 rounded-3xl border-2 border-white/10 font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">💡 Enable Studio Fill Light</button>
+        </aside>
 
-    <div id="modal" class="fixed inset-0 bg-black/98 z-[1000] hidden flex items-center justify-center p-6 no-print" style="color: var(--text-color)">
-        <div class="max-w-4xl w-full glass p-10 flex flex-col md:flex-row gap-10 items-center">
-            <div class="bg-white p-2 rounded shadow-2xl"><canvas id="c" class="w-[280px]"></canvas></div>
-            <div class="flex-1 space-y-8">
-                <h2 class="text-6xl font-900 italic uppercase" style="color: var(--accent)">Elite!</h2>
-                <div class="flex gap-4">
-                    <button onclick="location.reload()" class="flex-1 py-4 glass font-black text-xs uppercase">Discard</button>
-                    <button onclick="window.print()" class="flex-1 py-4 btn-main text-black font-black text-xs uppercase">Print Strip</button>
-                </div>
-                <a href="https://saweria.co/apongsky73" target="_blank" class="block text-center text-[10px] opacity-50 underline">Support Admin via Saweria ☕</a>
+        <main class="lg:col-span-6 flex flex-col items-center">
+            <div class="camera-ring w-full aspect-[3/4]">
+                <video id="video" autoplay playsinline></video>
+                <div id="countdown" class="absolute inset-0 flex items-center justify-center text-[220px] font-black text-white hidden z-20" style="font-family: 'Bebas Neue'"></div>
+                <div class="absolute inset-0 border-[20px] border-white/5 pointer-events-none z-10"></div>
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button onclick="setTimer(3)" id="t3" class="timer-btn w-16 h-16 rounded-full border-2 border-white/10 font-black text-xs flex items-center justify-center active">3s</button>
+                <button onclick="setTimer(5)" id="t5" class="timer-btn w-16 h-16 rounded-full border-2 border-white/10 font-black text-xs flex items-center justify-center">5s</button>
+                <button onclick="setTimer(10)" id="t10" class="timer-btn w-16 h-16 rounded-full border-2 border-white/10 font-black text-xs flex items-center justify-center">10s</button>
+            </div>
+
+            <button onclick="startCapture()" id="snap-btn" class="btn-action w-full mt-8 py-8 text-4xl italic tracking-tighter shadow-2xl uppercase">
+                Take Session 📸
+            </button>
+        </main>
+
+        <aside class="lg:col-span-3">
+            <div class="bg-zinc-900/50 p-6 rounded-[45px] border border-white/5">
+                <p class="text-[10px] font-black opacity-20 text-center mb-6 uppercase tracking-widest">Roll Gallery</p>
+                <div id="gallery" class="grid grid-cols-2 gap-3 max-h-[500px] overflow-y-auto"></div>
+            </div>
+            <div class="mt-6">
+                <input type="text" id="tag" placeholder="INPUT TAG..." class="w-full bg-zinc-900 border border-white/10 p-5 rounded-2xl text-xs font-black uppercase tracking-widest focus:border-white outline-none">
+            </div>
+        </aside>
+    </div>
+</div>
+
+<div id="modal" class="fixed inset-0 bg-black/98 hidden flex items-center justify-center p-6 z-[2000] no-print">
+    <div class="max-w-5xl w-full flex flex-col md:flex-row gap-12 items-center">
+        <div class="bg-white p-4 rounded-sm shadow-[0_0_100px_rgba(255,255,255,0.1)] scale-90 md:scale-100">
+            <canvas id="finalCanvas" class="w-[300px]"></canvas>
+        </div>
+        <div class="flex-1 space-y-8 text-center md:text-left">
+            <h2 class="text-8xl font-black italic tracking-tighter uppercase leading-none" style="color: var(--accent)">LEGEND!</h2>
+            <p class="opacity-40 text-sm font-bold uppercase tracking-widest">Your story starts here. Save & Print.</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="window.print()" class="w-full py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest">Print Double Strip</button>
+                <button onclick="downloadImage()" class="w-full py-6 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition">Save to Device</button>
+                <button onclick="location.reload()" class="w-full py-4 opacity-40 hover:opacity-100 font-black text-[10px] uppercase">Discard</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="hidden print:block"><img id="print-img" class="w-full"></div>
+<script>
+    const video = document.getElementById('video');
+    const gallery = document.getElementById('gallery');
+    const countdownEl = document.getElementById('countdown');
+    const fillLight = document.getElementById('fill-light');
+    const synth = window.speechSynthesis;
+    let poses = [];
+    let curTheme = 'tiger';
+    let selectedTimer = 3;
+    let currentFilter = 'none';
 
-    <script>
-        const v = document.getElementById('v');
-        const c = document.getElementById('c');
-        const countEl = document.getElementById('count');
-        const gallery = document.getElementById('gallery');
-        const flash = document.getElementById('flash');
-        const b = document.getElementById('b');
-        const tagInput = document.getElementById('tag');
+    async function init() {
+        try {
+            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
+            video.srcObject = s;
+            document.getElementById('cam-status').innerText = "SYSTEMS ONLINE";
+            document.getElementById('cam-status').classList.add('text-green-500');
+        } catch (e) {
+            document.getElementById('cam-status').innerText = "CAMERA ERROR";
+            alert("Please allow camera access!");
+        }
+    }
+
+    function setFilter(f) {
+        currentFilter = f;
+        video.style.filter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function toggleFillLight() {
+        const isOn = fillLight.style.display === 'block';
+        fillLight.style.display = isOn ? 'none' : 'block';
+        document.getElementById('light-btn').innerText = isOn ? "💡 Enable Studio Fill Light" : "☀️ Fill Light Active";
+    }
+
+    function changeTheme(t) {
+        curTheme = t;
+        document.body.className = 'min-h-screen p-4 md:p-8 mode-' + t;
+    }
+
+    function setTimer(s) {
+        selectedTimer = s;
+        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('t'+s).classList.add('active');
+    }
+
+    function announce(txt) {
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = 'en-US'; u.rate = 1.1; synth.speak(u);
+    }
+
+    async function startCapture() {
+        poses = []; gallery.innerHTML = '';
+        document.getElementById('snap-btn').disabled = true;
+
+        for(let i=1; i<=4; i++) {
+            let c = selectedTimer;
+            countdownEl.classList.remove('hidden');
+            while(c > 0) {
+                countdownEl.innerText = c;
+                if(c <= 3) announce(c.toString());
+                await new Promise(r => setTimeout(r, 1000));
+                c--;
+            }
+            announce("Action!");
+            countdownEl.classList.add('hidden');
+            snap();
+            if(i < 4) await new Promise(r => setTimeout(r, 1500));
+        }
+        renderResult();
+    }
+
+    function snap() {
+        document.getElementById('shutter-flash').classList.add('flash-active');
+        setTimeout(() => document.getElementById('shutter-flash').classList.remove('flash-active'), 250);
+
+        const temp = document.createElement('canvas');
+        temp.width = 1080; temp.height = 800;
+        const ctx = temp.getContext('2d');
+        ctx.filter = currentFilter;
+        ctx.translate(1080, 0); ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, 1080, 800);
         
-        let poses = [];
-        let curMode = 'tiger';
-        const sfxShutter = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3');
-        const synth = window.speechSynthesis;
+        const data = temp.toDataURL('image/jpeg', 0.9);
+        poses.push(data);
+        const img = document.createElement('img');
+        img.src = data; img.className = "rounded-2xl border border-white/10 hover:scale-105 transition shadow-2xl";
+        gallery.prepend(img);
+    }
 
-        const music = new Audio();
-        music.loop = true;
-        const tracks = {
-            tiger: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', 
-            cyber: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3', 
-            gemoy: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 
-            press: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'  
-        };
+    async function renderResult() {
+        const cv = document.getElementById('finalCanvas');
+        const ctx = cv.getContext('2d');
+        cv.width = 1000; cv.height = 1600;
 
-        const voices = {
-            tiger: "ROAR! Bersiap untuk foto terbaikmu!",
-            cyber: "Sistem aktif. Siapkan pose futuristik Anda!",
-            gemoy: "Hai manis! Yuk berpose yang paling gemoy!",
-            press: "Perhatian! Senyum terbaik untuk berita utama hari ini!"
-        };
+        ctx.fillStyle = (curTheme === 'tiger') ? '#000' : (curTheme === 'retro') ? '#292524' : '#020617';
+        ctx.fillRect(0, 0, 1000, 1600);
 
-        const defaultTags = {
-            tiger: "虎 TIGER ROAR 虎",
-            cyber: "FUTURE_CORE 2026",
-            gemoy: "Sweet Memories ✨",
-            press: "THE DAILY PRESS"
-        };
-
-        navigator.mediaDevices.getUserMedia({ video: { width: 1080, height: 1440 } }).then(s => v.srcObject = s);
-
-        function setEngine(m) {
-            curMode = m;
-            b.className = 'min-h-screen p-4 md:p-8 mode-' + m;
-            
-            // Update tag input placeholder and value
-            tagInput.placeholder = defaultTags[m];
-            tagInput.value = ''; // Clear previous tag for new theme
-
-            music.src = tracks[m];
-            music.play().catch(() => console.log("User must interact first"));
-
-            if(m === 'press') v.style.filter = "grayscale(1) contrast(1.3)";
-            else if(m === 'tiger') v.style.filter = "contrast(1.2) brightness(1.1)";
-            else if(m === 'gemoy') v.style.filter = "brightness(1.1) saturate(1.2)";
-            else v.style.filter = "contrast(1.1) saturate(1.4)";
+        for(let i=0; i<4; i++) {
+            const img = new Image(); img.src = poses[i];
+            await new Promise(r => img.onload = r);
+            ctx.fillStyle = "#fff";
+            // Double Strip Layout
+            ctx.fillRect(40, 40 + (i*360), 420, 320);
+            ctx.drawImage(img, 45, 45 + (i*360), 410, 310);
+            ctx.fillRect(540, 40 + (i*360), 420, 320);
+            ctx.drawImage(img, 545, 45 + (i*360), 410, 310);
         }
 
-        async function startSession() {
-            poses = []; gallery.innerHTML = '';
-            document.getElementById('snap-btn').disabled = true;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = (curTheme === 'tiger') ? '#facc15' : (curTheme === 'retro') ? '#fb923c' : '#a855f7';
+        ctx.font = '800 30px Arial';
+        const tag = document.getElementById('tag').value || "APONGSKY v35 ULTIMATE";
+        ctx.fillText(tag, 250, 1530); ctx.fillText(tag, 750, 1530);
 
-            music.pause(); // Pause background music during countdown
+        document.getElementById('modal').classList.remove('hidden');
+    }
 
-            const utter = new SpeechSynthesisUtterance(voices[curMode]);
-            utter.lang = 'id-ID'; 
-            synth.speak(utter);
-            await new Promise(r => setTimeout(r, 2000)); // Delay after voice over
+    function downloadImage() {
+        const link = document.createElement('a');
+        link.download = `apongsky-v35-${Date.now()}.png`;
+        link.href = document.getElementById('finalCanvas').toDataURL();
+        link.click();
+    }
 
-            for(let i=1; i<=4; i++) {
-                let t = 3; countEl.classList.remove('hidden');
-                while(t > 0) { countEl.innerText = t; await new Promise(r => setTimeout(r, 1000)); t--; }
-                countEl.classList.add('hidden'); snap();
-                if(i < 4) await new Promise(r => setTimeout(r, 1500));
-            }
-            renderFinal();
-        }
-
-        function snap() {
-            sfxShutter.play(); flash.classList.add('flash-active');
-            setTimeout(() => flash.classList.remove('flash-active'), 400);
-            const temp = document.createElement('canvas'); temp.width = 1080; temp.height = 800;
-            const ctx = temp.getContext('2d');
-            ctx.filter = v.style.filter;
-            ctx.translate(1080, 0); ctx.scale(-1, 1);
-            ctx.drawImage(v, 0, 0, 1080, 800);
-            poses.push(temp.toDataURL('image/jpeg', 0.9));
-            const img = document.createElement('img'); img.src = poses[poses.length-1]; 
-            img.className = "rounded-2xl border border-white/20";
-            gallery.prepend(img);
-        }
-
-        async function renderFinal() {
-            music.pause(); // Ensure music is off
-            const ctx = c.getContext('2d');
-            c.width = 1000; c.height = 1600;
-
-            if(curMode === 'tiger') ctx.fillStyle = '#000';
-            else if(curMode === 'gemoy') ctx.fillStyle = '#fbcfe8';
-            else if(curMode === 'press') ctx.fillStyle = '#f1f5f9';
-            else ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, c.width, c.height);
-
-            const drawBox = async (x) => {
-                for(let i=0; i<4; i++) {
-                    const img = new Image(); img.src = poses[i];
-                    await new Promise(r => img.onload = r);
-                    ctx.fillStyle = "#fff";
-                    if(curMode === 'gemoy') {
-                        ctx.save(); ctx.beginPath(); ctx.roundRect(x+40, 40 + (i*360), 420, 320, 50); ctx.fill(); ctx.clip();
-                        ctx.drawImage(img, x+40, 40 + (i*360), 420, 320); ctx.restore();
-                    } else {
-                        ctx.fillRect(x+35, 35 + (i*360), 430, 330);
-                        ctx.drawImage(img, x+40, 40 + (i*360), 420, 320);
-                    }
-                }
-                
-                ctx.textAlign = 'center';
-                const currentTag = tagInput.value || tagInput.placeholder; // Use user input or default
-                
-                if(curMode === 'tiger') {
-                    ctx.fillStyle = '#facc15'; ctx.font = '800 60px UnifrakturMaguntia';
-                    ctx.fillText(currentTag, x + 250, 1515);
-                } else if(curMode === 'cyber') {
-                    ctx.fillStyle = '#fff'; ctx.font = '900 45px Syne';
-                    ctx.fillText(currentTag, x + 250, 1515);
-                } else if(curMode === 'gemoy') {
-                    ctx.fillStyle = '#be185d'; ctx.font = '35px Pacifico';
-                    ctx.fillText(currentTag, x + 250, 1530);
-                } else {
-                    ctx.fillStyle = '#0f172a'; ctx.font = '800 40px Special Elite';
-                    ctx.fillText(currentTag, x + 250, 1510);
-                }
-            }
-
-            await drawBox(0); await drawBox(500);
-            document.getElementById('print-img').src = c.toDataURL('image/png');
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        // Initialize with default tiger mode on load
-        setEngine('tiger'); 
-    </script>
+    window.onload = init;
+</script>
 </body>
 </html>
