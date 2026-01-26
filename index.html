@@ -3,37 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth Viral V39</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Plus+Jakarta+Sans:wght@400;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>NaraStore0719 - PhotoBooth V40</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0d0d0d; --text: #f0f0f0; --accent: #d4af37; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 480px; background: #151515; padding: 20px; border-radius: 35px; border: 1px solid #222; text-align: center; }
+        :root { --bg: #0d0d0d; --panel: #151515; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 450px; background: var(--panel); padding: 20px; border-radius: 30px; border: 1px solid #222; text-align: center; }
         
-        /* Camera View */
-        .cam-box { position: relative; border-radius: 25px; overflow: hidden; aspect-ratio: 1/1; border: 2px solid #333; margin-bottom: 20px; }
+        /* Cam View */
+        .cam-box { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1/1; border: 2px solid #333; margin-bottom: 15px; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 10; color: white; }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; font-weight: 800; z-index: 10; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .flash { position: absolute; inset: 0; background: white; opacity: 0; z-index: 11; pointer-events: none; }
         .flash.active { opacity: 1; transition: 0.1s; }
 
-        /* Template Selector */
-        .selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
+        /* Color Selector */
+        .color-label { font-size: 10px; font-weight: 800; color: #666; letter-spacing: 2px; margin-bottom: 10px; display: block; }
+        .selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
         .selector::-webkit-scrollbar { display: none; }
-        .t-item { min-width: 90px; padding: 12px 5px; border-radius: 15px; border: 2px solid #333; background: #222; cursor: pointer; transition: 0.3s; }
-        .t-item.active { border-color: var(--accent); background: rgba(212, 175, 55, 0.1); }
-        .t-item span { display: block; font-size: 10px; font-weight: 800; color: #fff; }
+        .dot { min-width: 45px; height: 45px; border-radius: 12px; border: 2px solid #333; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: rgba(0,0,0,0.3); }
+        .dot.active { border-color: white; transform: scale(1.1); color: rgba(0,0,0,0.6); }
 
-        #startBtn { width: 100%; background: #fff; color: #000; border: none; padding: 20px; border-radius: 20px; font-size: 16px; font-weight: 800; cursor: pointer; }
-        canvas { width: 100%; border-radius: 15px; margin-top: 25px; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .btn-save { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
+        #startBtn { width: 100%; background: #fff; color: #000; border: none; padding: 18px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; }
+        canvas { width: 100%; border-radius: 15px; margin-top: 20px; display: none; }
+        .btn-save { background: #444; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: 10px; display: none; font-weight: 800; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 style="margin:0; font-size: 20px; letter-spacing: 3px; color:var(--accent)">NARA VIRAL BOOTH</h1>
-    <p style="font-size: 8px; opacity: 0.4; margin-bottom: 15px;">PREMIUM STRIP V39</p>
+    <div style="margin-bottom: 15px;">
+        <h2 style="margin:0; letter-spacing: 1px; font-size: 18px;">NARASTORE0719</h2>
+        <p style="font-size: 8px; opacity: 0.5; margin: 0;">PHOTO BOOTH WITH APONGSKY</p>
+    </div>
 
     <div class="cam-box">
         <div id="flash" class="flash"></div>
@@ -41,40 +43,49 @@
         <video id="v" autoplay playsinline></video>
     </div>
 
-    <div class="selector">
-        <div class="t-item active" onclick="setT('leopard', this)"><span>🐆 LEOPARD</span></div>
-        <div class="t-item" onclick="setT('news', this)"><span>📰 KORAN</span></div>
-        <div class="t-item" onclick="setT('y2k', this)"><span>💖 Y2K</span></div>
-        <div class="t-item" onclick="setT('minimal', this)"><span>⚪ CLEAN</span></div>
-        <div class="t-item" onclick="setT('noir', this)"><span>🌑 NOIR</span></div>
-    </div>
+    <span class="color-label">CHOOSE STRIP COLOR (10 COLORS)</span>
+    <div id="colorPicker" class="selector"></div>
 
-    <button id="startBtn" onclick="run()">Mulai Foto (4x)</button>
+    <button id="startBtn" onclick="run()">START SESSION (4X)</button>
     <canvas id="c"></canvas>
-    <button id="sBtn" class="btn-save" onclick="save()">Simpan ke Galeri</button>
+    <button id="sBtn" class="btn-save" onclick="save()">SAVE PHOTO STRIP</button>
 </div>
 
 <script>
 const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
 const btn = document.getElementById('startBtn'), sBtn = document.getElementById('sBtn'), flash = document.getElementById('flash'), timer = document.getElementById('timer');
 
-let shots = [], currentT = 'leopard';
+const palette = [
+    { name: 'Latte', bg: '#f1ede4', txt: '#004274' },
+    { name: 'Rose', bg: '#e91e63', txt: '#ffffff' },
+    { name: 'Sky', bg: '#81b6c9', txt: '#00334e' },
+    { name: 'Lime', bg: '#a4c639', txt: '#1d3108' },
+    { name: 'Grape', bg: '#9c27b0', txt: '#ffffff' },
+    { name: 'Sunset', bg: '#ff5722', txt: '#ffffff' },
+    { name: 'Metal', bg: '#455a64', txt: '#cfd8dc' },
+    { name: 'Cherry', bg: '#d32f2f', txt: '#ffffff' },
+    { name: 'Lemon', bg: '#fbc02d', txt: '#3e2723' },
+    { name: 'Mint', bg: '#4db6ac', txt: '#00332e' }
+];
 
-const frames = {
-    leopard: { bg: "#c5a059", txt: "#fff", label: "GOLDEN WILD STUDIO", filter: "brightness(1.1)" },
-    news: { bg: "#f0ece2", txt: "#1a1a1a", label: "DAILY NEWS VINTAGE", filter: "grayscale(1) contrast(1.1)" },
-    y2k: { bg: "#ff758c", txt: "#fff", label: "Y2K VIBE ONLY", filter: "saturate(1.4)" },
-    minimal: { bg: "#ffffff", txt: "#333", label: "MINIMALIST MOMENT", filter: "brightness(1.05)" },
-    noir: { bg: "#111", txt: "#fff", label: "DARK PRIVATE ROOM", filter: "grayscale(1) contrast(1.3)" }
-};
+let shots = [], currentId = 0;
+
+// Build Selector
+const picker = document.getElementById('colorPicker');
+palette.forEach((color, i) => {
+    const d = document.createElement('div');
+    d.className = `dot ${i===0?'active':''}`;
+    d.style.backgroundColor = color.bg;
+    d.innerText = color.name.toUpperCase();
+    d.onclick = () => {
+        currentId = i;
+        document.querySelectorAll('.dot').forEach(el => el.classList.remove('active'));
+        d.classList.add('active');
+    };
+    picker.appendChild(d);
+});
 
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(s => v.srcObject = s);
-
-function setT(t, el) {
-    currentT = t;
-    document.querySelectorAll('.t-item').forEach(x => x.classList.remove('active'));
-    el.classList.add('active');
-}
 
 async function run() {
     shots = []; c.style.display = 'none'; sBtn.style.display = 'none'; btn.disabled = true;
@@ -97,52 +108,58 @@ async function run() {
 }
 
 function render() {
-    const cfg = frames[currentT];
-    c.width = 600; c.height = 2400;
+    const theme = palette[currentId];
+    c.width = 600; c.height = 2200;
     
-    // Background frame
-    ctx.fillStyle = cfg.bg;
-    ctx.fillRect(0,0,600,2400);
+    // Background Frame
+    ctx.fillStyle = theme.bg;
+    ctx.roundRect(0, 0, 600, 2200, 40); // Rounded Corner Frame
+    ctx.fill();
 
-    // Leopard Pattern Generator (Khusus Macan)
-    if(currentT === 'leopard') {
-        ctx.fillStyle = "#3d2b1f";
-        for(let i=0; i<100; i++) {
-            ctx.beginPath();
-            ctx.arc(Math.random()*600, Math.random()*2400, Math.random()*25, 0, Math.PI*2);
-            ctx.fill();
-        }
-    }
+    // Logo & Header
+    ctx.fillStyle = theme.txt;
+    ctx.textAlign = "center";
+    ctx.font = "800 24px 'Plus Jakarta Sans'";
+    ctx.fillText("NARASTORE0719", 300, 180);
+    ctx.font = "400 10px 'Plus Jakarta Sans'";
+    ctx.letterSpacing = "2px";
+    ctx.fillText("PHOTO BOOTH WITH APONGSKY", 300, 205);
 
     shots.forEach((src, i) => {
         const img = new Image();
         img.src = src;
-        const y = 100 + (i * 560);
-        ctx.fillStyle = "white";
-        ctx.fillRect(45, y-5, 510, 510);
+        const y = 280 + (i * 440);
+        
+        // Photo Shadow/Border
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(75, y+5, 450, 420);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(70, y, 460, 420);
         
         img.onload = () => {
-            ctx.filter = cfg.filter;
-            ctx.drawImage(img, 50, y, 500, 500);
-            ctx.filter = "none";
+            ctx.drawImage(img, 80, y+10, 440, 400);
         };
     });
 
     setTimeout(() => {
-        ctx.fillStyle = cfg.txt;
-        ctx.textAlign = "center";
-        ctx.font = "italic bold 40px 'Playfair Display'";
-        ctx.fillText(cfg.label, 300, 2320);
+        // Footer Details
+        ctx.fillStyle = theme.txt;
+        ctx.font = "italic 16px 'Playfair Display'";
+        ctx.fillText("✨ Memories ✨", 300, 2080);
         
+        ctx.font = "800 12px 'Plus Jakarta Sans'";
+        const now = new Date();
+        ctx.fillText(`${now.getDate()}.${now.getMonth()+1}.${now.getFullYear()} | NARASTORE0719`, 300, 2120);
+
         c.style.display = 'block'; sBtn.style.display = 'block';
         btn.disabled = false;
         c.scrollIntoView({ behavior: 'smooth' });
-    }, 600);
+    }, 800);
 }
 
 function save() {
     const l = document.createElement('a');
-    l.download = `NaraBooth_${currentT}.png`;
+    l.download = `NaraStore_${palette[currentId].name}.png`;
     l.href = c.toDataURL('image/png');
     l.click();
 }
