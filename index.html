@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth Ultra Smooth V18</title>
+    <title>NaraBooth Premium V21</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff7675; --bg: #0f1115; }
+        :root { --accent: #ff7675; --bg: #0f1115; --yellow: #feca57; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        .container { width: 100%; max-width: 450px; background: #1a1c23; padding: 25px; border-radius: 40px; border: 2px solid #333; text-align: center; position: relative; }
         
-        .container { width: 100%; max-width: 450px; background: #1a1c23; padding: 25px; border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); border: 2px solid #333; text-align: center; }
-        
-        .header h1 { margin: 0; font-size: 28px; font-weight: 800; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header p { margin: 0 0 20px; font-size: 10px; opacity: 0.5; letter-spacing: 2px; }
+        .header h1 { margin: 0; font-size: 28px; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .header p { font-size: 10px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 20px; }
 
         .screen-container { position: relative; background: #000; border-radius: 30px; overflow: hidden; aspect-ratio: 1/1; border: 4px solid #2d3436; margin-bottom: 20px; }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: brightness(1.2) contrast(1.1); }
         
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 100; color: white; text-shadow: 0 5px 30px rgba(0,0,0,0.8); }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 100; color: white; }
+        .flash { position: absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; pointer-events:none; z-index:101; }
+        .flash-active { opacity:1; transition: 0.1s; }
         
-        .flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 101; }
-        .flash-active { opacity: 1; transition: 0.1s; }
+        .sticker-box { display: flex; gap: 12px; overflow-x: auto; padding: 10px; background: #111; border-radius: 20px; margin-bottom: 15px; border: 1px solid #333; }
+        .sticker-item { font-size: 32px; cursor: pointer; }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .control-item { background: rgba(255,255,255,0.08); border: 1px solid #444; color: white; padding: 15px; border-radius: 18px; font-weight: 700; font-size: 14px; outline: none; }
+        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675, #d63031); color: white; border: none; padding: 20px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(214, 48, 49, 0.4); }
+        
+        canvas { max-width: 100%; border-radius: 25px; margin-top: 20px; display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
 
-        .sticker-box { display: flex; gap: 15px; overflow-x: auto; padding: 12px; background: #111; border-radius: 20px; margin-bottom: 20px; border: 1px solid #333; }
-        .sticker-item { font-size: 32px; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
-        .sticker-item:active { transform: scale(1.4); }
-
-        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675 0%, #d63031 100%); color: white; border: none; padding: 22px; border-radius: 25px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(214, 48, 49, 0.4); margin-bottom: 10px; transition: 0.3s; }
-        #startBtn:active { transform: scale(0.96); }
-        #startBtn:disabled { opacity: 0.5; filter: grayscale(1); }
-
-        canvas { max-width: 100%; border-radius: 20px; margin-top: 25px; display: none; touch-action: none; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid #444; }
-        .btn-save { background: #00b894; color: white; border: none; padding: 20px; border-radius: 20px; width: 100%; margin-top: 15px; display: none; font-weight: 800; cursor: pointer; font-size: 16px; }
-
-        .saweria-btn { background: #feca57; color: #2d3436; text-decoration: none; font-weight: 800; padding: 15px 30px; border-radius: 20px; display: inline-block; margin-top: 25px; box-shadow: 0 8px 25px rgba(254, 202, 87, 0.4); animation: pulse 2s infinite; font-size: 14px; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        /* Popup Saweria / QRIS */
+        .qris-popup { display: none; margin-top: 25px; padding: 20px; background: rgba(254, 202, 87, 0.1); border: 2px dashed var(--yellow); border-radius: 30px; animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .saweria-link { background: var(--yellow); color: #2d3436; text-decoration: none; font-weight: 800; padding: 15px 30px; border-radius: 15px; display: inline-block; margin-top: 10px; font-size: 14px; box-shadow: 0 5px 15px rgba(254, 202, 87, 0.3); }
     </style>
 </head>
 <body>
@@ -45,7 +40,7 @@
 <div class="container">
     <div class="header">
         <h1>NARA BOOTH</h1>
-        <p>V18 NO-GLITCH • ULTRA HD</p>
+        <p>V21 BRIGHT & PROFIT MODE</p>
     </div>
 
     <div class="screen-container">
@@ -54,37 +49,28 @@
         <video id="webcam" autoplay playsinline></video>
     </div>
 
-    <div class="controls">
-        <select id="filterSelect" class="control-item">
-            <option value="none">Natural HD</option>
-            <option value="brightness(1.1) contrast(1.1)">Studio Glow</option>
-            <option value="grayscale(100%) contrast(1.2)">Vintage Noir</option>
-        </select>
-        <input type="color" id="frameColor" class="control-item" value="#ffffff" style="padding: 5px;">
-    </div>
-
     <div class="sticker-box">
         <span class="sticker-item" onclick="addSticker('🐱')">🐱</span>
         <span class="sticker-item" onclick="addSticker('🎀')">🎀</span>
-        <span class="sticker-item" onclick="addSticker('❤️')">❤️</span>
         <span class="sticker-item" onclick="addSticker('✨')">✨</span>
-        <span class="sticker-item" onclick="addSticker('🐻')">🐻</span>
+        <span class="sticker-item" onclick="addSticker('❤️')">❤️</span>
         <span class="sticker-item" onclick="addSticker('👑')">👑</span>
     </div>
 
-    <button id="startBtn" onclick="startSession()">📸 AMBIL FOTO HD</button>
-
+    <button id="startBtn" onclick="startSession()">📸 MULAI FOTO</button>
     <canvas id="finalCanvas"></canvas>
-    <button id="downloadBtn" class="btn-save" onclick="downloadImage()">💾 SIMPAN KE GALERI</button>
+    <button id="downloadBtn" class="btn-save" onclick="downloadImage()">💾 SIMPAN FOTO</button>
 
-    <div style="text-align: center;">
-        <a href="https://saweria.co/narastore0719" target="_blank" class="saweria-btn">☕ DUKUNG VIA SAWERIA</a>
+    <div id="qrisPopup" class="qris-popup">
+        <h3 style="margin:0; color: var(--yellow);">Suka hasilnya? ✨</h3>
+        <p style="font-size: 11px; opacity: 0.8;">Traktir NaraStore kopi via Gopay/QRIS yuk!</p>
+        <p style="font-size: 14px; font-weight: 800; margin: 5px 0;">083825256323</p>
+        <a href="https://saweria.co/narastore0719" target="_blank" class="saweria-link">💸 BAYAR PAKAI QRIS / GOPAY</a>
     </div>
 </div>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
 <audio id="shutter" src="https://www.soundjay.com/free-music/shutter-click-01.mp3"></audio>
-<audio id="cheer" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
 <script>
 const video = document.getElementById('webcam');
@@ -94,25 +80,99 @@ const canvas = document.getElementById('finalCanvas');
 const ctx = canvas.getContext('2d');
 const startBtn = document.getElementById('startBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const qrisPopup = document.getElementById('qrisPopup');
 
 const beep = document.getElementById('beep');
 const shutter = document.getElementById('shutter');
-const cheer = document.getElementById('cheer');
 
 let capturedImages = [], stickers = [];
 
-// Request HD 1:1
 navigator.mediaDevices.getUserMedia({ 
-    video: { facingMode: "user", width: { ideal: 1080 }, height: { ideal: 1080 } } 
+    video: { facingMode: "user", width: 720, height: 720 } 
 }).then(s => video.srcObject = s);
 
 async function startSession() {
     capturedImages = []; stickers = [];
     canvas.style.display = 'none'; downloadBtn.style.display = 'none';
+    qrisPopup.style.display = 'none';
     startBtn.disabled = true;
 
     for(let i=0; i<4; i++) {
         for(let c=3; c>=0; c--) {
             timerEl.innerText = c > 0 ? c : "";
             if(c > 0) beep.play();
-            await new Promise(r => setTimeout
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        flashEl.classList.add('flash-active');
+        shutter.play();
+        await takeSnap();
+        setTimeout(() => flashEl.classList.remove('flash-active'), 100);
+        await new Promise(r => setTimeout(r, 500));
+    }
+    
+    renderStrip();
+    canvas.style.display = 'block'; 
+    downloadBtn.style.display = 'block';
+    qrisPopup.style.display = 'block'; // Munculkan popup donasi
+    startBtn.disabled = false;
+}
+
+function takeSnap() {
+    return new Promise(resolve => {
+        const temp = document.createElement('canvas');
+        temp.width = 800; temp.height = 800;
+        const tCtx = temp.getContext('2d');
+        tCtx.filter = "brightness(1.1) contrast(1.1)";
+        tCtx.translate(800,0); tCtx.scale(-1,1);
+        tCtx.drawImage(video, 0, 0, 800, 800);
+        const img = new Image();
+        img.onload = () => { capturedImages.push(img); resolve(); };
+        img.src = temp.toDataURL('image/png');
+    });
+}
+
+function renderStrip() {
+    canvas.width = 600; canvas.height = 2000;
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,600,2000);
+    ctx.fillStyle = "#2d3436"; ctx.textAlign = "center";
+    ctx.font = "bold 40px 'Plus Jakarta Sans'";
+    ctx.fillText("NARA BOOTH", 300, 80);
+
+    capturedImages.forEach((img, i) => {
+        const y = 150 + (i * 450);
+        ctx.fillStyle = "#f1f2f6"; ctx.fillRect(45, y-5, 510, 435);
+        ctx.drawImage(img, 50, y, 500, 425);
+    });
+    drawStickersOnly();
+}
+
+function addSticker(emoji) {
+    stickers.push({ emoji, x: 300, y: 1200 });
+    renderStrip();
+}
+
+function drawStickersOnly() {
+    ctx.font = "80px serif"; ctx.textAlign = "center";
+    stickers.forEach(s => ctx.fillText(s.emoji, s.x, s.y));
+}
+
+canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    if(stickers.length > 0) {
+        const last = stickers[stickers.length-1];
+        last.x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+        last.y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+        renderStrip();
+    }
+}, {passive: false});
+
+function downloadImage() {
+    const link = document.createElement('a');
+    link.download = `NaraBooth_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+</script>
+</body>
+</html>
