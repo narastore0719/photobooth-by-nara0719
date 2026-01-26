@@ -3,43 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NaraBooth Galaxy V29</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>NaraBooth MultiStyle V37</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Plus+Jakarta+Sans:wght@400;800&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0f1115; --accent: #ff7675; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg: #0d0d0d; --accent: #fff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 480px; background: #151515; padding: 20px; border-radius: 35px; border: 1px solid #222; text-align: center; }
         
-        .container { width: 100%; max-width: 450px; background: #1a1c23; padding: 20px; border-radius: 40px; border: 1px solid #333; text-align: center; }
-        .header h1 { margin: 0; font-size: 24px; background: linear-gradient(45deg, #ff7675, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-
-        .cam-box { position: relative; border-radius: 30px; overflow: hidden; aspect-ratio: 1/1; border: 3px solid #333; margin: 15px 0; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: brightness(1.1); }
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; font-weight: 800; z-index: 10; text-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .cam-box { position: relative; border-radius: 25px; overflow: hidden; aspect-ratio: 1/1; border: 2px solid #333; margin-bottom: 20px; }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; z-index: 10; }
         .flash { position: absolute; inset: 0; background: white; opacity: 0; z-index: 11; pointer-events: none; }
         .flash.active { opacity: 1; transition: 0.1s; }
 
-        /* Multi Template Grid */
-        .selector-title { font-size: 11px; font-weight: 800; color: #666; letter-spacing: 1px; margin-bottom: 10px; display: block; }
-        .template-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .temp-card { padding: 10px 2px; border-radius: 12px; border: 2px solid #333; background: #252830; color: white; cursor: pointer; font-size: 9px; font-weight: 800; transition: 0.2s; }
-        .temp-card.active { border-color: #ff7675; background: rgba(255,118,117,0.1); color: #ff7675; }
+        /* Diverse Selector */
+        .selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; scrollbar-width: none; }
+        .selector::-webkit-scrollbar { display: none; }
+        .t-card { min-width: 90px; padding: 12px 5px; border-radius: 15px; border: 2px solid #333; background: #222; cursor: pointer; transition: 0.3s; }
+        .t-card.active { border-color: #fff; background: #333; }
+        .t-card span { font-size: 10px; font-weight: 800; display: block; }
 
-        #startBtn { width: 100%; background: linear-gradient(135deg, #ff7675, #d63031); color: white; border: none; padding: 18px; border-radius: 20px; font-size: 16px; font-weight: 800; cursor: pointer; }
-        
-        canvas { width: 100%; border-radius: 20px; margin-top: 20px; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 18px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
-
-        .footer-donate { display: none; margin-top: 20px; padding: 15px; background: rgba(254, 202, 87, 0.05); border: 1px dashed #feca57; border-radius: 20px; }
-        .sawer-btn { background: #feca57; color: #2d3436; text-decoration: none; font-weight: 800; padding: 10px 20px; border-radius: 12px; display: inline-block; margin-top: 10px; font-size: 12px; }
+        #startBtn { width: 100%; background: #fff; color: #000; border: none; padding: 20px; border-radius: 20px; font-size: 16px; font-weight: 800; cursor: pointer; }
+        canvas { width: 100%; border-radius: 15px; margin-top: 25px; display: none; }
+        .btn-save { background: #00b894; color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; margin-top: 15px; display: none; font-weight: 800; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>NARA BOOTH</h1>
-        <p style="font-size: 9px; opacity: 0.5; letter-spacing: 2px;">V29 | 7 PREMIUM TEMPLATES</p>
+    <div style="margin-bottom: 15px;">
+        <h1 style="margin:0; font-size: 20px; font-weight: 800; letter-spacing: 2px;">NARA MULTI-STUDIO</h1>
+        <p style="font-size: 8px; opacity: 0.5;">5 PREMIUM STYLES V37</p>
     </div>
 
     <div class="cam-box">
@@ -48,113 +42,124 @@
         <video id="v" autoplay playsinline></video>
     </div>
 
-    <span class="selector-title">PILIH 1 DARI 7 TEMPLATE</span>
-    <div class="template-grid">
-        <div class="temp-card active" onclick="setT('pink', this)">🌸 PINK</div>
-        <div class="temp-card" onclick="setT('sky', this)">🧊 BLUE</div>
-        <div class="temp-card" onclick="setT('noir', this)">🏁 NOIR</div>
-        <div class="temp-card" onclick="setT('matcha', this)">🍵 GREEN</div>
-        <div class="temp-card" onclick="setT('sunset', this)">🌇 SUNSET</div>
-        <div class="temp-card" onclick="setT('lavender', this)">💜 PURPLE</div>
-        <div class="temp-card" onclick="setT('vintage', this)">🎞️ RETRO</div>
+    <div class="selector">
+        <div class="t-card active" onclick="setT('macan', this)"><span>🐆 MACAN</span></div>
+        <div class="t-card" onclick="setT('noir', this)"><span>🖤 NOIR</span></div>
+        <div class="t-card" onclick="setT('soft', this)"><span>🌸 SOFT</span></div>
+        <div class="t-card" onclick="setT('vintage', this)"><span>🎞️ VINTAGE</span></div>
+        <div class="t-card" onclick="setT('y2k', this)"><span>🌈 Y2K</span></div>
     </div>
 
-    <button id="startBtn" onclick="run()">📸 MULAI FOTO</button>
+    <button id="startBtn" onclick="run()">TAKE 4 PHOTOS</button>
     <canvas id="c"></canvas>
-    <button id="sBtn" class="save-btn" onclick="save()">💾 SIMPAN HASIL HD</button>
-
-    <div id="fd" class="footer-donate">
-        <p style="margin:0; font-size: 12px; color: #feca57;">Gopay: 083825256323</p>
-        <a href="https://saweria.co/narastore0719" target="_blank" class="sawer-btn">💸 TRAKTIR KOPI</a>
-    </div>
+    <button id="sBtn" class="btn-save" onclick="save()">DOWNLOAD STRIP</button>
 </div>
 
 <script>
 const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
 const btn = document.getElementById('startBtn'), sBtn = document.getElementById('sBtn'), flash = document.getElementById('flash'), timer = document.getElementById('timer');
 
-let shots = [], currentT = 'pink';
+let shots = [], currentT = 'macan';
 
-const configs = {
-    pink: { bg: "#ffdee9", text: "#ff8fa3", stickers: ["🌸","🎀","🍓","🧸"], label: "Elevate Moment's" },
-    sky: { bg: "#e0f2fe", text: "#0ea5e9", stickers: ["🧊","☁️","🌟","🫧"], label: "Sky Vibes" },
-    noir: { bg: "#1a1c23", text: "#ffffff", stickers: ["💀","🏁","🎸","🔥"], label: "Dark Edition" },
-    matcha: { bg: "#f0fff4", text: "#48bb78", stickers: ["🍵","🍃","🍏","🎍"], label: "Nature Fresh" },
-    sunset: { bg: "#fffaf0", text: "#ed8936", stickers: ["🌇","🌅","🍊","✨"], label: "Golden Hour" },
-    lavender: { bg: "#f5f3ff", text: "#8b5cf6", stickers: ["💜","🍇","🔮","🌌"], label: "Dreamy Night" },
-    vintage: { bg: "#fdf2f2", text: "#7f1d1d", stickers: ["🎞️","📷","📻","🤎"], label: "Classic Retro" }
+const config = {
+    macan: { bg: "#c5a059", txt: "#fff", label: "DAILY SPACE STUDIO", font: "italic bold 35px 'Playfair Display'" },
+    noir: { bg: "#000", txt: "#fff", label: "NOIR PRIVATE", font: "800 30px 'Plus Jakarta Sans'" },
+    soft: { bg: "#f5ece5", txt: "#8b5e3c", label: "Korean Moment", font: "800 30px 'Plus Jakarta Sans'" },
+    vintage: { bg: "#d2b48c", txt: "#7f1d1d", label: "MEMORIES 1998", font: "bold 30px 'Courier Prime'" },
+    y2k: { bg: "linear-gradient", txt: "#fff", label: "VIBE CHECK", font: "800 35px 'Plus Jakarta Sans'" }
 };
 
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 720, height: 720 } }).then(s => v.srcObject = s);
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(s => v.srcObject = s);
 
 function setT(t, el) {
     currentT = t;
-    document.querySelectorAll('.temp-card').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.t-card').forEach(x => x.classList.remove('active'));
     el.classList.add('active');
-    if(shots.length > 0) render(); // Update langsung jika foto sudah ada
 }
 
 async function run() {
-    shots = []; c.style.display = 'none'; sBtn.style.display = 'none'; document.getElementById('fd').style.display = 'none';
-    btn.disabled = true;
-
-    for(let i=0; i<3; i++) {
+    shots = []; c.style.display = 'none'; sBtn.style.display = 'none'; btn.disabled = true;
+    for(let i=0; i<4; i++) {
         for(let l=3; l>=0; l--) {
             timer.innerText = l > 0 ? l : "";
             await new Promise(r => setTimeout(r, 1000));
         }
-        flash.classList.add('active'); snap();
+        flash.classList.add('active');
+        const t = document.createElement('canvas');
+        t.width = 1000; t.height = 1000;
+        const tc = t.getContext('2d');
+        tc.translate(1000,0); tc.scale(-1,1);
+        tc.drawImage(v, 0, 0, 1000, 1000);
+        shots.push(t.toDataURL('image/png'));
         setTimeout(() => flash.classList.remove('active'), 100);
         await new Promise(r => setTimeout(r, 600));
     }
-    
     render();
-    c.style.display = 'block'; sBtn.style.display = 'block'; document.getElementById('fd').style.display = 'block';
-    btn.disabled = false;
-    c.scrollIntoView({ behavior: 'smooth' });
-}
-
-function snap() {
-    const t = document.createElement('canvas');
-    t.width = 800; t.height = 800;
-    const tc = t.getContext('2d');
-    tc.translate(800,0); tc.scale(-1,1);
-    tc.drawImage(v, 0, 0, 800, 800);
-    const img = new Image();
-    img.src = t.toDataURL('image/png');
-    shots.push(img);
 }
 
 function render() {
-    const cfg = configs[currentT];
-    c.width = 500; c.height = 1500;
-    ctx.fillStyle = cfg.bg; ctx.fillRect(0,0,500,1500);
+    const cfg = config[currentT];
+    c.width = 600; c.height = 2400;
     
-    ctx.fillStyle = cfg.text; ctx.textAlign = "center";
-    ctx.font = "800 28px 'Plus Jakarta Sans'";
-    ctx.fillText(currentT.toUpperCase(), 250, 65);
+    // Background handling
+    if(currentT === 'y2k') {
+        let grad = ctx.createLinearGradient(0,0,0,2400);
+        grad.addColorStop(0, "#ff0080"); grad.addColorStop(1, "#00bfff");
+        ctx.fillStyle = grad;
+    } else {
+        ctx.fillStyle = cfg.bg;
+    }
+    ctx.fillRect(0,0,600,2400);
 
-    shots.forEach((img, i) => {
-        const y = 130 + (i * 420);
-        ctx.fillStyle = "white"; ctx.fillRect(45, y-5, 410, 410);
-        ctx.drawImage(img, 50, y, 400, 400);
+    // Decorate Leopard only if selected
+    if(currentT === 'macan') {
+        ctx.fillStyle = "#3d2b1f";
+        for(let i=0; i<80; i++) {
+            ctx.beginPath();
+            ctx.arc(Math.random()*600, Math.random()*2400, Math.random()*25, 0, Math.PI*2);
+            ctx.fill();
+        }
+    }
 
-        ctx.font = "45px serif";
-        ctx.fillText(cfg.stickers[0], 65, y+45); 
-        ctx.fillText(cfg.stickers[1], 435, y+395); 
+    shots.forEach((src, i) => {
+        const img = new Image();
+        img.src = src;
+        const y = 120 + (i * 540);
+        
+        ctx.fillStyle = "white";
+        ctx.fillRect(45, y-5, 510, 510);
+        
+        img.onload = () => {
+            // Apply filter for Noir & Vintage
+            if(currentT === 'noir') ctx.filter = "grayscale(1) contrast(1.2)";
+            if(currentT === 'vintage') ctx.filter = "sepia(0.5) contrast(1.1)";
+            
+            ctx.drawImage(img, 50, y, 500, 500);
+            ctx.filter = "none";
+
+            if(currentT === 'vintage') {
+                ctx.fillStyle = "#ff4500";
+                ctx.font = "20px 'Courier Prime'";
+                ctx.fillText("'26 01 26", 450, y+480);
+            }
+        };
     });
 
-    ctx.font = "italic 30px serif";
-    ctx.fillText(cfg.label, 250, 1430);
-    
-    ctx.font = "50px serif";
-    ctx.fillText(cfg.stickers[2], 80, 1440);
-    ctx.fillText(cfg.stickers[3], 420, 1440);
+    setTimeout(() => {
+        ctx.fillStyle = cfg.txt;
+        ctx.textAlign = "center";
+        ctx.font = cfg.font;
+        ctx.fillText(cfg.label, 300, 2300);
+        
+        c.style.display = 'block'; sBtn.style.display = 'block';
+        btn.disabled = false;
+        c.scrollIntoView({ behavior: 'smooth' });
+    }, 500);
 }
 
 function save() {
     const l = document.createElement('a');
-    l.download = `NaraBooth_${currentT}_${Date.now()}.png`;
+    l.download = `NaraBooth_${currentT}.png`;
     l.href = c.toDataURL('image/png');
     l.click();
 }
