@@ -2,188 +2,224 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APONGSKY STUDIO x STILL ALIVE v100</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>APONGSKY STUDIO v220 | ULTIMATE ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Syne:wght@800&display=swap" rel="stylesheet">
     <style>
-        body { background: #050505; color: white; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .tmpl-btn { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-        .tmpl-btn.active { background: white; color: black; border-color: white; transform: scale(1.05); }
-        .flash-active { animation: flashAnim 0.2s ease-out; }
-        @keyframes flashAnim { from { opacity: 0; } to { opacity: 1; } }
-        #video-feed { transform: scaleX(-1); border-radius: 20px; }
+        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; touch-action: manipulation; overflow-x: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .preview-box { position: relative; width: 100%; max-width: 450px; aspect-ratio: 3/4; border-radius: 30px; overflow: hidden; background: #111; border: 4px solid #222; }
+        #video-feed { width: 100%; height: 100%; object-cover: cover; transform: scaleX(-1); }
+        .frame-item { min-width: 90px; height: 90px; border-radius: 20px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; text-align: center; border: 2px solid transparent; transition: 0.3s; cursor: pointer; flex-shrink: 0; padding: 5px; color: #666; }
+        .frame-item.active { border-color: #00f2ff; background: #fff; color: #000; transform: scale(1.05); }
+        .tab-btn { transition: 0.3s; position: relative; font-size: 10px; font-weight: 900; opacity: 0.4; white-space: nowrap; text-transform: uppercase; }
+        .tab-btn.active { color: #00f2ff; opacity: 1 !important; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 2px; background: #00f2ff; }
+        .flash-effect { animation: flashAnim 0.15s ease-out; }
+        @keyframes flashAnim { from { opacity: 0.8; } to { opacity: 0; } }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body class="flex flex-col items-center min-h-screen pb-24">
 
-    <div class="w-full max-w-[500px] flex justify-between items-center p-3 bg-yellow-400 text-black font-black text-[10px] rounded-2xl mb-6 shadow-xl">
-        <span class="tracking-widest">APONGSKY x STILL ALIVE v100</span>
-        <button onclick="window.open('https://saweria.co/apongsky', '_blank')" class="bg-black text-white px-4 py-1.5 rounded-full animate-bounce">
-            SUPPORT VIA SAWERIA ☕
+    <div class="w-full flex justify-between items-center p-5 bg-black/80 backdrop-blur-xl sticky top-0 z-50 border-b border-white/5">
+        <div class="flex flex-col">
+            <h1 class="font-black text-lg tracking-tighter leading-none">APONGSKY<span class="text-cyan-400">.v220</span></h1>
+            <span class="text-[8px] opacity-40 font-bold tracking-[0.3em]">OBLITERATOR EDITION</span>
+        </div>
+        <button onclick="window.open('https://saweria.co/apongsky')" class="bg-yellow-400 text-black text-[10px] font-black px-4 py-2 rounded-full shadow-lg shadow-yellow-400/20 active:scale-95 transition">SUPPORT DEV ☕</button>
+    </div>
+
+    <div class="mt-6 preview-box shadow-2xl">
+        <video id="video-feed" autoplay playsinline></video>
+        <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden drop-shadow-2xl"></div>
+        <div id="flash-overlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
+    </div>
+
+    <div class="w-full max-w-[450px] px-6 mt-8">
+        <div class="flex bg-[#111] p-1.5 rounded-2xl border border-white/5">
+            <button onclick="setGrid(1)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">1 FOTO</button>
+            <button onclick="setGrid(4)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl bg-white text-black transition">4 FOTO</button>
+            <button onclick="setGrid(6)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">6 FOTO</button>
+            <button onclick="setGrid(8)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">8 FOTO</button>
+        </div>
+    </div>
+
+    <div class="w-full overflow-x-auto flex gap-6 px-8 mt-8 no-scrollbar scroll-smooth">
+        <button onclick="filterCat('vibes', this)" class="tab-btn active">☁️ Vibes</button>
+        <button onclick="filterCat('viral', this)">🔥 Viral</button>
+        <button onclick="filterCat('fashion', this)">👠 Fashion</button>
+        <button onclick="filterCat('retro', this)">🎞️ Retro</button>
+        <button onclick="filterCat('extreme', this)">💀 Extreme</button>
+    </div>
+
+    <div id="frame-container" class="w-full flex overflow-x-auto gap-4 px-8 mt-6 no-scrollbar">
+        </div>
+
+    <div class="fixed bottom-6 w-full max-w-[450px] px-6 z-50">
+        <button id="snap-btn" onclick="startSession()" class="w-full py-5 bg-white text-black font-black rounded-[28px] text-lg shadow-[0_15px_40px_rgba(255,255,255,0.15)] active:scale-90 transition-all duration-300">
+            JEPET SEKARANG 📸
         </button>
     </div>
 
-    <div class="relative w-full max-w-[500px] aspect-[3/4] glass rounded-[30px] overflow-hidden mb-6">
-        <video id="video-feed" class="w-full h-full object-cover" autoplay playsinline></video>
-        <div id="screen-flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
-        <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden"></div>
-    </div>
-
-    <div class="w-full max-w-[500px] mb-6">
-        <p class="text-[9px] opacity-40 mb-3 text-center font-bold tracking-[0.3em]">SELECT GRID DENSITY</p>
-        <div class="grid grid-cols-4 gap-2">
-            <button onclick="setGrid(1)" data-grid="1" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">1 FOTO</button>
-            <button onclick="setGrid(4)" data-grid="4" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold bg-white text-black">4 FOTO</button>
-            <button onclick="setGrid(6)" data-grid="6" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">6 FOTO</button>
-            <button onclick="setGrid(8)" data-grid="8" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">8 FOTO</button>
-        </div>
-    </div>
-
-    <div class="w-full max-w-[500px] glass p-4 rounded-[25px] mb-8">
-        <p class="text-[9px] opacity-40 mb-4 text-center font-bold tracking-[0.3em]">20+ ARCHIVE TEMPLATES</p>
-        <div class="grid grid-cols-4 gap-2">
-            <button onclick="setTmpl('classic', this)" class="tmpl-btn p-2 rounded-lg text-[8px] active">CLEAN</button>
-            <button onclick="setTmpl('parking', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">PARK</button>
-            <button onclick="setTmpl('vhs', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">VHS</button>
-            <button onclick="setTmpl('insta', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">INSTA</button>
-            <button onclick="setTmpl('magazine', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">VOGUE</button>
-            <button onclick="setTmpl('film', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">KODAK</button>
-            <button onclick="setTmpl('cyber', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">CYBER</button>
-            <button onclick="setTmpl('cute', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">CUTE</button>
-            <button onclick="setTmpl('journal', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">NEWS</button>
-            <button onclick="setTmpl('natgeo', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">WILD</button>
-            <button onclick="setTmpl('spotify', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">SONG</button>
-            <button onclick="setTmpl('manga', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">MANGA</button>
-            <button onclick="setTmpl('horror', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">EVIL</button>
-            <button onclick="setTmpl('ticket', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">TIKET</button>
-            <button onclick="setTmpl('cd', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">ALBUM</button>
-            <button onclick="setTmpl('poster', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">WANTED</button>
-            <button onclick="setTmpl('neon', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">GLOW</button>
-            <button onclick="setTmpl('minimal', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">ART</button>
-            <button onclick="setTmpl('arcade', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">8-BIT</button>
-            <button onclick="setTmpl('apong', this)" class="tmpl-btn p-2 rounded-lg text-[8px] bg-cyan-900/50">APONG!</button>
-        </div>
-    </div>
-
-    <button id="snap-btn" onclick="startSession()" class="w-full max-w-[500px] py-6 bg-white text-black font-black rounded-[25px] text-xl tracking-tighter hover:bg-cyan-400 transition-all active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-        CAPTURE THE MOMENT
-    </button>
-
-    <div class="mt-12 text-center opacity-20 text-[8px] tracking-[0.5em] font-bold">
-        DESIGNED BY APONGSKY STUDIO © 2026<br>ALL RIGHTS RESERVED
-    </div>
-
-    <div id="modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center p-4 z-50">
-        <canvas id="display-canvas" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl mb-6"></canvas>
-        <div class="flex gap-4">
-            <button onclick="location.reload()" class="bg-white text-black px-8 py-3 rounded-full font-bold text-sm">RETAKE</button>
-            <button onclick="downloadImage()" class="bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm">DOWNLOAD PDF/IMG</button>
+    <div id="result-modal" class="fixed inset-0 bg-black hidden z-[100] flex flex-col items-center justify-center p-6 backdrop-blur-3xl">
+        <canvas id="final-canvas" class="max-w-full max-h-[72vh] rounded-3xl shadow-2xl mb-8 border-4 border-white/10"></canvas>
+        <div class="flex gap-4 w-full max-w-[400px]">
+            <button onclick="location.reload()" class="flex-1 py-4 bg-zinc-900 rounded-2xl font-bold text-sm tracking-widest">RETAKE</button>
+            <button onclick="downloadResult()" class="flex-1 py-4 bg-cyan-500 text-black rounded-2xl font-bold text-sm shadow-xl shadow-cyan-500/20">SAVE MEMORY</button>
         </div>
     </div>
 
     <script>
-        let currentTemplate = 'classic';
-        let totalPhotos = 4;
+        let currentGrid = 4;
+        let currentTmpl = 'aboutyou';
         let poses = [];
         const video = document.getElementById('video-feed');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        
+        const frames = [
+            { id: 'aboutyou', name: 'ABOUT YOU', cat: 'vibes' },
+            { id: 'spotify', name: 'SPOTIFY', cat: 'vibes' },
+            { id: 'pinterest', name: 'PINTEREST', cat: 'vibes' },
+            { id: 'classic', name: 'CLEAN', cat: 'viral' },
+            { id: 'parking', name: 'PARKING', cat: 'viral' },
+            { id: 'vhs', name: 'VHS 90S', cat: 'viral' },
+            { id: 'selfix', name: 'K-BOOTH', cat: 'viral' },
+            { id: 'vogue', name: 'VOGUE', cat: 'fashion' },
+            { id: 'hype', name: 'HYPEBEAST', cat: 'fashion' },
+            { id: 'elle', name: 'ELLE', cat: 'fashion' },
+            { id: 'kodak', name: 'KODAK', cat: 'retro' },
+            { id: 'fuji', name: 'FUJI', cat: 'retro' },
+            { id: 'thermal', name: 'HEAT', cat: 'extreme' },
+            { id: 'cctv', name: 'CCTV', cat: 'extreme' },
+            { id: 'apong_vip', name: 'VIP GOLD', cat: 'extreme' }
+        ];
 
-        // Camera Setup
-        navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 }, audio: false })
-            .then(stream => video.srcObject = stream);
+        navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 } }).then(s => video.srcObject = s);
 
-        function setGrid(n) {
-            totalPhotos = n;
-            document.querySelectorAll('.grid-btn').forEach(b => {
-                b.classList.remove('bg-white', 'text-black');
-                if(parseInt(b.dataset.grid) === n) b.classList.add('bg-white', 'text-black');
+        function init() {
+            const container = document.getElementById('frame-container');
+            container.innerHTML = frames.map(f => `
+                <div class="frame-item ${f.cat}" data-id="${f.id}" onclick="setTmpl('${f.id}', this)">
+                    ${f.name}
+                </div>
+            `).join('');
+            setTmpl('aboutyou', document.querySelector('[data-id="aboutyou"]'));
+            filterCat('vibes', document.querySelector('.tab-btn'));
+        }
+
+        function filterCat(cat, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.frame-item').forEach(f => {
+                f.style.display = (f.classList.contains(cat)) ? 'flex' : 'none';
             });
         }
 
-        function setTmpl(t, btn) {
-            currentTemplate = t;
-            document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        function setTmpl(id, el) {
+            currentTmpl = id;
+            document.querySelectorAll('.frame-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function setGrid(n) {
+            currentGrid = n;
+            document.querySelectorAll('.grid-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-black');
+                if(b.innerText.includes(n)) b.classList.add('bg-white', 'text-black');
+            });
         }
 
         async function startSession() {
             poses = [];
             const btn = document.getElementById('snap-btn');
-            btn.disabled = true; btn.innerText = "SMILE!";
+            btn.disabled = true; btn.innerText = "SMILE! 📸";
 
-            for(let i=0; i<totalPhotos; i++) {
-                let count = 3;
+            for(let i=0; i<currentGrid; i++) {
+                let timer = 3;
                 const cd = document.getElementById('countdown');
                 cd.classList.remove('hidden');
-                while(count > 0) {
-                    cd.innerText = count;
+                while(timer > 0) {
+                    cd.innerText = timer;
                     await new Promise(r => setTimeout(r, 800));
-                    count--;
+                    timer--;
                 }
                 cd.classList.add('hidden');
                 
-                // Snap logic
+                const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
                 ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
                 ctx.drawImage(video, 0, 0);
                 poses.push(canvas.toDataURL('image/jpeg'));
                 
-                document.getElementById('screen-flash').classList.add('flash-active');
-                setTimeout(() => document.getElementById('screen-flash').classList.remove('flash-active'), 100);
+                document.getElementById('flash-overlay').classList.add('flash-effect');
+                setTimeout(() => document.getElementById('flash-overlay').classList.remove('flash-effect'), 150);
                 await new Promise(r => setTimeout(r, 1000));
             }
             renderFinal();
         }
 
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath(); ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
+            ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath(); ctx.fill();
+        }
+
         async function renderFinal() {
-            const out = document.getElementById('display-canvas');
-            const octx = out.getContext('2d');
-            out.width = 1000; out.height = 1600;
+            const canvas = document.getElementById('final-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 1000; canvas.height = 1600;
 
-            // BG
-            octx.fillStyle = (currentTemplate === 'vhs' || currentTemplate === 'horror') ? '#050505' : '#fff';
-            octx.fillRect(0,0,1000,1600);
+            const isDark = ['vhs','extreme','aboutyou'].includes(currentTmpl);
+            ctx.fillStyle = isDark ? '#080808' : '#fff';
+            ctx.fillRect(0,0,1000,1600);
 
-            // GRID RENDER
-            const top = 180;
-            for(let i=0; i<totalPhotos; i++) {
+            for(let i=0; i<currentGrid; i++) {
                 const img = new Image(); img.src = poses[i];
                 await new Promise(r => img.onload = r);
-                octx.shadowBlur = 15; octx.shadowColor = "rgba(0,0,0,0.2)";
-                
-                if(totalPhotos === 1) octx.drawImage(img, 100, 300, 800, 1000);
-                else if(totalPhotos === 4) octx.drawImage(img, 80, top + (i*345), 840, 330);
+                let y = 180 + (i * (1300/currentGrid));
+                let h = (1200/currentGrid);
+                if(currentGrid === 1) ctx.drawImage(img, 100, 300, 800, 1000);
+                else if(currentGrid === 4) ctx.drawImage(img, 80, 180 + (i*340), 840, 320);
                 else {
                     let col = i%2; let row = Math.floor(i/2);
-                    let h = (totalPhotos === 6) ? 440 : 330;
-                    octx.drawImage(img, 60 + (col*450), top + (row*(h+15)), 430, h);
+                    let gh = (currentGrid==6)?430:320;
+                    ctx.drawImage(img, 60 + (col*450), 180 + (row*(gh+20)), 430, gh);
                 }
             }
 
-            // OVERLAY HAK CIPTA & TEMPLATE (Detail v100)
-            octx.shadowBlur = 0; octx.textAlign = "center"; octx.fillStyle = "#000";
-            if(currentTemplate === 'parking') {
-                octx.font = "bold 40px monospace"; octx.fillText("KARCIS PARKIR APONGSKY", 500, 100);
-                octx.font = "15px monospace"; octx.fillText("SEGALA KENANGAN BUKAN TANGGUNG JAWAB PENGELOLA", 500, 1550);
+            // OVERLAY LOGIC
+            ctx.textAlign = "center";
+            if(currentTmpl === 'aboutyou' || currentTmpl === 'spotify') {
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                roundRect(ctx, 100, 1340, 800, 200, 40);
+                ctx.fillStyle = "#000"; ctx.textAlign = "left";
+                ctx.font = "bold 45px sans-serif"; ctx.fillText("About You", 160, 1410);
+                ctx.font = "25px sans-serif"; ctx.fillStyle = "#666"; ctx.fillText("The 1975 • Being Funny In A Foreign Language", 160, 1460);
+                ctx.fillStyle = "#eee"; ctx.fillRect(160, 1500, 680, 8);
+                ctx.fillStyle = "#000"; ctx.fillRect(160, 1500, 400, 8);
             }
             
-            // WATERMARK PERMANEN
-            octx.globalAlpha = 0.5;
-            octx.font = "900 15px sans-serif";
-            octx.fillText("© 2026 APONGSKY STUDIO | STILL ALIVE ARCHIVE v100", 500, 1585);
+            // FOOTER BRANDING
+            ctx.globalAlpha = 0.5; ctx.textAlign = "center";
+            ctx.fillStyle = isDark ? "#fff" : "#000";
+            ctx.font = "900 14px sans-serif";
+            ctx.fillText("© 2026 APONGSKY STUDIO | v220.0 THE OBLITERATOR | SUPPORT ON SAWERIA", 500, 1585);
             
-            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('result-modal').classList.remove('hidden');
         }
 
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.download = `apongsky-archive-${Date.now()}.jpg`;
-            link.href = document.getElementById('display-canvas').toDataURL('image/jpeg', 0.9);
-            link.click();
+        function downloadResult() {
+            const jajan = confirm("Support Apongsky via Saweria buat update frame lainnya? Lanjut save?");
+            if(jajan) {
+                const link = document.createElement('a');
+                link.download = `apongsky-v220-${Date.now()}.jpg`;
+                link.href = document.getElementById('final-canvas').toDataURL('image/jpeg', 0.9);
+                link.click();
+            }
         }
+        init();
     </script>
 </body>
 </html>
