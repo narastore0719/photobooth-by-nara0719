@@ -2,232 +2,188 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APONGSKY | STILL ALIVE v65.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APONGSKY STUDIO x STILL ALIVE v100</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syne:wght@800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800;900&family=Space+Grotesk:wght@300;700&display=swap');
-        
-        body { background: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; touch-action: manipulation; margin: 0; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); }
-        .brand-logo { font-family: 'Syne'; font-weight: 900; letter-spacing: -2px; font-style: italic; }
-        
-        /* CAMERA CONTAINER */
-        .cam-container { position: relative; border-radius: 40px; overflow: hidden; background: #000; border: 4px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(0,0,0,1); }
-        #video { transform: scaleX(-1); object-fit: cover; width: 100%; height: 100%; }
-
-        /* FX: FLASH & SHAKE */
-        #screen-flash { position: fixed; inset: 0; background: white; z-index: 10000; opacity: 0; pointer-events: none; }
-        .flash-active { animation: proFlash 0.6s ease-out; }
-        @keyframes proFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
-        .shake { animation: shake 0.3s both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } }
-
-        /* BUTTONS */
-        .tmpl-btn { transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 1px; }
-        .tmpl-btn.active { background: #fff; color: #000; transform: scale(1.05); border-color: #fff; font-weight: 900; }
-        .btn-capture { background: #fff; color: #000; font-family: 'Syne'; font-weight: 900; border-radius: 30px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-capture:hover:not(:disabled) { background: #00f2ea; transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,242,234,0.3); }
-
-        #pdf-content { width: 1000px; position: absolute; left: -9999px; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        body { background: #050505; color: white; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .tmpl-btn { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+        .tmpl-btn.active { background: white; color: black; border-color: white; transform: scale(1.05); }
+        .flash-active { animation: flashAnim 0.2s ease-out; }
+        @keyframes flashAnim { from { opacity: 0; } to { opacity: 1; } }
+        #video-feed { transform: scaleX(-1); border-radius: 20px; }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen flex flex-col items-center">
+<body class="p-4 flex flex-col items-center">
 
-<div id="screen-flash"></div>
+    <div class="w-full max-w-[500px] flex justify-between items-center p-3 bg-yellow-400 text-black font-black text-[10px] rounded-2xl mb-6 shadow-xl">
+        <span class="tracking-widest">APONGSKY x STILL ALIVE v100</span>
+        <button onclick="window.open('https://saweria.co/apongsky', '_blank')" class="bg-black text-white px-4 py-1.5 rounded-full animate-bounce">
+            SUPPORT VIA SAWERIA ☕
+        </button>
+    </div>
 
-<header class="w-full max-w-[1200px] flex justify-between items-center mb-10">
-    <div class="brand-logo text-4xl uppercase tracking-tighter">APONGSKY<span class="text-cyan-500">v65</span></div>
-    <div class="hidden md:block text-[10px] font-bold opacity-30 tracking-[0.4em] uppercase text-right">Blok M Archive / Still Alive Edition</div>
-</header>
+    <div class="relative w-full max-w-[500px] aspect-[3/4] glass rounded-[30px] overflow-hidden mb-6">
+        <video id="video-feed" class="w-full h-full object-cover" autoplay playsinline></video>
+        <div id="screen-flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
+        <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden"></div>
+    </div>
 
-<div class="max-w-[1200px] w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-    <div class="lg:col-span-3 space-y-6 order-2 lg:order-1">
-        <div class="glass p-6 rounded-[35px]">
-            <p class="text-[10px] font-black opacity-30 mb-6 uppercase tracking-widest text-center">Select Template</p>
-            <div id="template-grid" class="grid grid-cols-2 gap-3">
-                <button onclick="setTemplate('classic')" class="tmpl-btn active p-4 rounded-2xl text-[9px] font-bold">Clean</button>
-                <button onclick="setTemplate('parking')" class="tmpl-btn p-4 rounded-2xl text-[9px] font-bold">Parking</button>
-                <button onclick="setTemplate('journal')" class="tmpl-btn p-4 rounded-2xl text-[9px] font-bold">Journal</button>
-                <button onclick="setTemplate('ticket')" class="tmpl-btn p-4 rounded-2xl text-[9px] font-bold">Ticket</button>
-                <button onclick="setTemplate('vandal')" class="tmpl-btn p-4 rounded-2xl text-[9px] font-bold">Vandal</button>
-                <button onclick="setTemplate('y2k')" class="tmpl-btn p-4 rounded-2xl text-[9px] font-bold">Y2K Cyber</button>
-            </div>
+    <div class="w-full max-w-[500px] mb-6">
+        <p class="text-[9px] opacity-40 mb-3 text-center font-bold tracking-[0.3em]">SELECT GRID DENSITY</p>
+        <div class="grid grid-cols-4 gap-2">
+            <button onclick="setGrid(1)" data-grid="1" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">1 FOTO</button>
+            <button onclick="setGrid(4)" data-grid="4" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold bg-white text-black">4 FOTO</button>
+            <button onclick="setGrid(6)" data-grid="6" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">6 FOTO</button>
+            <button onclick="setGrid(8)" data-grid="8" class="grid-btn p-2 rounded-xl glass text-[10px] font-bold">8 FOTO</button>
         </div>
     </div>
 
-    <div class="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
-        <div id="cam-box" class="cam-container aspect-[3/4] w-full max-w-[550px]">
-            <video id="video" autoplay playsinline></video>
-            <div id="countdown" class="absolute inset-0 flex items-center justify-center text-[180px] font-black text-white hidden z-50 italic" style="font-family: 'Syne'"></div>
-        </div>
-        <button onclick="startSession()" id="snap-btn" class="btn-capture w-full max-w-[550px] mt-8 py-8 text-3xl italic tracking-tighter uppercase">Capture The Moment</button>
-    </div>
-
-    <div class="lg:col-span-3 order-3">
-        <div class="glass p-6 rounded-[35px] h-[450px] flex flex-col">
-            <p class="text-[10px] font-black opacity-30 text-center mb-6 uppercase tracking-widest">Digital Roll</p>
-            <div id="gallery" class="grid grid-cols-2 gap-3 overflow-y-auto pr-2"></div>
-        </div>
-    </div>
-</div>
-
-<footer class="w-full max-w-[1200px] mt-16 mb-8 flex flex-col md:flex-row justify-between items-center opacity-30 hover:opacity-100 transition duration-500 gap-4">
-    <div class="text-[10px] font-bold tracking-[0.2em] uppercase">© 2026 APONGSKY. Developed for Artistic Purposes.</div>
-    <a href="https://saweria.co/apongsky73" target="_blank" class="text-[10px] font-bold tracking-[0.2em] uppercase bg-white/10 px-4 py-2 rounded-full hover:bg-cyan-500 hover:text-black transition">Support via Saweria</a>
-</footer>
-
-<div id="pdf-content"></div>
-
-<div id="modal" class="fixed inset-0 bg-black/98 hidden z-[2000] flex items-center justify-center p-6 backdrop-blur-3xl">
-    <div class="max-w-4xl w-full glass p-10 md:p-14 rounded-[60px] flex flex-col md:flex-row gap-12 items-center">
-        <canvas id="display-canvas" class="w-[280px] md:w-[340px] bg-white p-2 shadow-2xl"></canvas>
-        <div class="flex-1 space-y-10 text-center md:text-left">
-            <div>
-                <h2 class="text-7xl font-black italic tracking-tighter leading-none" style="font-family: 'Syne'">STILL<br>ALIVE.</h2>
-                <p class="text-[10px] font-bold opacity-40 uppercase tracking-[0.5em] mt-6 italic">Memory Archived by Apongsky</p>
-            </div>
-            <div class="flex flex-col gap-4">
-                <button onclick="savePDF()" class="py-6 bg-white text-black rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-cyan-400 transition">Download PDF 📄</button>
-                <button onclick="location.reload()" class="py-4 opacity-20 text-[10px] font-bold uppercase hover:opacity-100 transition">Discard Session</button>
-            </div>
+    <div class="w-full max-w-[500px] glass p-4 rounded-[25px] mb-8">
+        <p class="text-[9px] opacity-40 mb-4 text-center font-bold tracking-[0.3em]">20+ ARCHIVE TEMPLATES</p>
+        <div class="grid grid-cols-4 gap-2">
+            <button onclick="setTmpl('classic', this)" class="tmpl-btn p-2 rounded-lg text-[8px] active">CLEAN</button>
+            <button onclick="setTmpl('parking', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">PARK</button>
+            <button onclick="setTmpl('vhs', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">VHS</button>
+            <button onclick="setTmpl('insta', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">INSTA</button>
+            <button onclick="setTmpl('magazine', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">VOGUE</button>
+            <button onclick="setTmpl('film', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">KODAK</button>
+            <button onclick="setTmpl('cyber', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">CYBER</button>
+            <button onclick="setTmpl('cute', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">CUTE</button>
+            <button onclick="setTmpl('journal', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">NEWS</button>
+            <button onclick="setTmpl('natgeo', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">WILD</button>
+            <button onclick="setTmpl('spotify', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">SONG</button>
+            <button onclick="setTmpl('manga', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">MANGA</button>
+            <button onclick="setTmpl('horror', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">EVIL</button>
+            <button onclick="setTmpl('ticket', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">TIKET</button>
+            <button onclick="setTmpl('cd', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">ALBUM</button>
+            <button onclick="setTmpl('poster', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">WANTED</button>
+            <button onclick="setTmpl('neon', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">GLOW</button>
+            <button onclick="setTmpl('minimal', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">ART</button>
+            <button onclick="setTmpl('arcade', this)" class="tmpl-btn p-2 rounded-lg text-[8px]">8-BIT</button>
+            <button onclick="setTmpl('apong', this)" class="tmpl-btn p-2 rounded-lg text-[8px] bg-cyan-900/50">APONG!</button>
         </div>
     </div>
-</div>
 
-<script>
-    const video = document.getElementById('video');
-    const gallery = document.getElementById('gallery');
-    const countdownEl = document.getElementById('countdown');
-    const sfxSnap = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3');
-    
-    let poses = [];
-    let currentTemplate = 'classic';
+    <button id="snap-btn" onclick="startSession()" class="w-full max-w-[500px] py-6 bg-white text-black font-black rounded-[25px] text-xl tracking-tighter hover:bg-cyan-400 transition-all active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+        CAPTURE THE MOMENT
+    </button>
 
-    async function init() {
-        try {
-            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
-            video.srcObject = s;
-        } catch (e) { alert("Enable camera to start!"); }
-    }
+    <div class="mt-12 text-center opacity-20 text-[8px] tracking-[0.5em] font-bold">
+        DESIGNED BY APONGSKY STUDIO © 2026<br>ALL RIGHTS RESERVED
+    </div>
 
-    function setTemplate(t) {
-        currentTemplate = t;
-        document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
+    <div id="modal" class="fixed inset-0 bg-black/95 hidden flex-col items-center justify-center p-4 z-50">
+        <canvas id="display-canvas" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl mb-6"></canvas>
+        <div class="flex gap-4">
+            <button onclick="location.reload()" class="bg-white text-black px-8 py-3 rounded-full font-bold text-sm">RETAKE</button>
+            <button onclick="downloadImage()" class="bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm">DOWNLOAD PDF/IMG</button>
+        </div>
+    </div>
 
-    async function startSession() {
-        poses = []; gallery.innerHTML = '';
-        const btn = document.getElementById('snap-btn');
-        btn.disabled = true;
-        btn.innerText = "SMILE! 📸";
+    <script>
+        let currentTemplate = 'classic';
+        let totalPhotos = 4;
+        let poses = [];
+        const video = document.getElementById('video-feed');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
 
-        for(let i=1; i<=4; i++) {
-            let c = 3;
-            countdownEl.classList.remove('hidden');
-            while(c > 0) {
-                countdownEl.innerText = c;
+        // Camera Setup
+        navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 }, audio: false })
+            .then(stream => video.srcObject = stream);
+
+        function setGrid(n) {
+            totalPhotos = n;
+            document.querySelectorAll('.grid-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-black');
+                if(parseInt(b.dataset.grid) === n) b.classList.add('bg-white', 'text-black');
+            });
+        }
+
+        function setTmpl(t, btn) {
+            currentTemplate = t;
+            document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        async function startSession() {
+            poses = [];
+            const btn = document.getElementById('snap-btn');
+            btn.disabled = true; btn.innerText = "SMILE!";
+
+            for(let i=0; i<totalPhotos; i++) {
+                let count = 3;
+                const cd = document.getElementById('countdown');
+                cd.classList.remove('hidden');
+                while(count > 0) {
+                    cd.innerText = count;
+                    await new Promise(r => setTimeout(r, 800));
+                    count--;
+                }
+                cd.classList.add('hidden');
+                
+                // Snap logic
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0);
+                poses.push(canvas.toDataURL('image/jpeg'));
+                
+                document.getElementById('screen-flash').classList.add('flash-active');
+                setTimeout(() => document.getElementById('screen-flash').classList.remove('flash-active'), 100);
                 await new Promise(r => setTimeout(r, 1000));
-                c--;
             }
-            countdownEl.classList.add('hidden');
+            renderFinal();
+        }
+
+        async function renderFinal() {
+            const out = document.getElementById('display-canvas');
+            const octx = out.getContext('2d');
+            out.width = 1000; out.height = 1600;
+
+            // BG
+            octx.fillStyle = (currentTemplate === 'vhs' || currentTemplate === 'horror') ? '#050505' : '#fff';
+            octx.fillRect(0,0,1000,1600);
+
+            // GRID RENDER
+            const top = 180;
+            for(let i=0; i<totalPhotos; i++) {
+                const img = new Image(); img.src = poses[i];
+                await new Promise(r => img.onload = r);
+                octx.shadowBlur = 15; octx.shadowColor = "rgba(0,0,0,0.2)";
+                
+                if(totalPhotos === 1) octx.drawImage(img, 100, 300, 800, 1000);
+                else if(totalPhotos === 4) octx.drawImage(img, 80, top + (i*345), 840, 330);
+                else {
+                    let col = i%2; let row = Math.floor(i/2);
+                    let h = (totalPhotos === 6) ? 440 : 330;
+                    octx.drawImage(img, 60 + (col*450), top + (row*(h+15)), 430, h);
+                }
+            }
+
+            // OVERLAY HAK CIPTA & TEMPLATE (Detail v100)
+            octx.shadowBlur = 0; octx.textAlign = "center"; octx.fillStyle = "#000";
+            if(currentTemplate === 'parking') {
+                octx.font = "bold 40px monospace"; octx.fillText("KARCIS PARKIR APONGSKY", 500, 100);
+                octx.font = "15px monospace"; octx.fillText("SEGALA KENANGAN BUKAN TANGGUNG JAWAB PENGELOLA", 500, 1550);
+            }
             
-            document.getElementById('screen-flash').classList.add('flash-active');
-            setTimeout(() => {
-                snap();
-                document.getElementById('screen-flash').classList.remove('flash-active');
-            }, 50);
-
-            if(i < 4) await new Promise(r => setTimeout(r, 1500));
-        }
-        renderToCanvas();
-    }
-
-    function snap() {
-        sfxSnap.play();
-        document.getElementById('cam-box').classList.add('shake');
-        setTimeout(() => document.getElementById('cam-box').classList.remove('shake'), 300);
-
-        const temp = document.createElement('canvas');
-        temp.width = 1080; temp.height = 800;
-        const ctx = temp.getContext('2d');
-        ctx.translate(1080, 0); ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0, 1080, 800);
-        
-        const data = temp.toDataURL('image/jpeg', 0.95);
-        poses.push(data);
-        const img = document.createElement('img');
-        img.src = data; img.className = "rounded-2xl border border-white/10 shadow-lg mb-2 transform hover:scale-105 transition";
-        gallery.prepend(img);
-    }
-
-    async function renderToCanvas() {
-        const cv = document.getElementById('display-canvas');
-        const ctx = cv.getContext('2d');
-        cv.width = 1000; cv.height = 1600;
-
-        // BACKGROUND LAYER
-        if(currentTemplate === 'parking') ctx.fillStyle = '#fdfdfd';
-        else if(currentTemplate === 'journal') ctx.fillStyle = '#e8e4d9';
-        else if(currentTemplate === 'ticket') ctx.fillStyle = '#f2f2f2';
-        else if(currentTemplate === 'y2k') {
-            let g = ctx.createLinearGradient(0,0,1000,1600); g.addColorStop(0,'#00d2ff'); g.addColorStop(1,'#3a7bd5'); ctx.fillStyle = g;
-        } else if(currentTemplate === 'vandal') ctx.fillStyle = '#111';
-        else ctx.fillStyle = '#fff';
-        ctx.fillRect(0, 0, 1000, 1600);
-
-        // PHOTOS
-        const yOffset = (currentTemplate === 'parking') ? 220 : (currentTemplate === 'journal' ? 150 : 80);
-        for(let i=0; i<4; i++) {
-            const img = new Image(); img.src = poses[i];
-            await new Promise(r => img.onload = r);
-            const yPos = yOffset + (i * 335);
-            ctx.fillStyle = "#000";
-            ctx.fillRect(45, yPos, 440, 315); ctx.drawImage(img, 50, yPos+5, 430, 305);
-            ctx.fillRect(515, yPos, 440, 315); ctx.drawImage(img, 520, yPos+5, 430, 305);
+            // WATERMARK PERMANEN
+            octx.globalAlpha = 0.5;
+            octx.font = "900 15px sans-serif";
+            octx.fillText("© 2026 APONGSKY STUDIO | STILL ALIVE ARCHIVE v100", 500, 1585);
+            
+            document.getElementById('modal').style.display = 'flex';
         }
 
-        // TEXT & DECORATION
-        ctx.fillStyle = (currentTemplate === 'vandal' || currentTemplate === 'y2k') ? '#fff' : '#000';
-        ctx.textAlign = "center";
-        
-        if(currentTemplate === 'parking') {
-            ctx.font = "bold 35px monospace"; ctx.fillText("KARCIS PARKIR BLOK M", 500, 80);
-            ctx.font = "18px monospace"; ctx.fillText("MASUK: " + new Date().toLocaleString(), 500, 140);
-            ctx.font = "bold 22px monospace"; ctx.fillText("SEGALA KEHILANGAN KENANGAN BUKAN TANGGUNG JAWAB PENGELOLA", 500, 1560);
-        } else if(currentTemplate === 'ticket') {
-            ctx.font = "bold 20px monospace"; ctx.fillText("ADMIT ONE - NO REFUND", 500, 45);
-            for(let b=0; b<40; b++) ctx.fillRect(350 + (b*8), 1480, Math.random()*10, 60);
-        } else if(currentTemplate === 'journal') {
-            ctx.font = "900 70px serif"; ctx.fillText("DAILY ARCHIVE", 500, 100);
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = `apongsky-archive-${Date.now()}.jpg`;
+            link.href = document.getElementById('display-canvas').toDataURL('image/jpeg', 0.9);
+            link.click();
         }
-
-        // BRANDING STILL ALIVE.
-        if(currentTemplate !== 'parking') {
-            ctx.font = '900 35px Syne';
-            ctx.fillText("STILL ALIVE.", 265, 1540);
-            ctx.fillText("STILL ALIVE.", 735, 1540);
-        }
-
-        // HIDDEN LEGAL WATERMARK
-        ctx.globalAlpha = 0.2; ctx.font = 'bold 12px Space Grotesk'; ctx.textAlign = 'right';
-        ctx.fillText("© 2026 APONGSKY STUDIO", 960, 1585); ctx.globalAlpha = 1.0;
-
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    function savePDF() {
-        const element = document.getElementById('pdf-content');
-        element.innerHTML = `<img src="${document.getElementById('display-canvas').toDataURL('image/jpeg', 1.0)}" style="width:100%">`;
-        const opt = { margin: 0, filename: `STILL-ALIVE-APONGSKY-${Date.now()}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save();
-    }
-
-    window.onload = init;
-</script>
+    </script>
 </body>
 </html>
