@@ -3,208 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APONGSKY v40.1 | GRAND FINALE</title>
+    <title>APONGSKY v50.0 | GOLDEN EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Space+Grotesk:wght@300;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800;900&family=Space+Grotesk:wght@300;700&display=swap');
         
-        body { background: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; }
+        body { background: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; margin: 0; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); }
+        .brand-logo { font-family: 'Syne'; font-weight: 900; letter-spacing: -2px; font-style: italic; }
         
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
-        
-        .cam-frame { position: relative; border-radius: 60px; padding: 8px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); }
-        .cam-inner { border-radius: 52px; overflow: hidden; position: relative; background: #000; }
+        .cam-container { position: relative; border-radius: 40px; overflow: hidden; background: #000; border: 4px solid rgba(255,255,255,0.1); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         #video { transform: scaleX(-1); object-fit: cover; width: 100%; height: 100%; }
 
-        .scan-anim { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent); height: 20%; animation: scan 3s ease-in-out infinite; pointer-events: none; }
-        @keyframes scan { 0% { top: -20%; } 100% { top: 100%; } }
+        /* FLASH EFFECT */
+        #screen-flash { position: fixed; inset: 0; background: white; z-index: 10000; opacity: 0; pointer-events: none; }
+        .flash-active { animation: proFlash 0.6s ease-out forwards; }
+        @keyframes proFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-        .btn-finale { background: #fff; color: #000; font-family: 'Syne'; font-weight: 800; border-radius: 20px; transition: 0.5s; }
-        .btn-finale:hover { background: #00f2ea; transform: scale(1.02); box-shadow: 0 0 50px rgba(0,242,234,0.4); }
+        /* SHAKE EFFECT */
+        .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
 
-        #shutter { position: fixed; inset: 0; background: white; z-index: 9999; opacity: 0; pointer-events: none; }
-        .shutter-on { animation: shut 0.3s ease-out; }
-        @keyframes shut { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        .frame-card { border: 2px solid transparent; transition: 0.3s; cursor: pointer; border-radius: 20px; opacity: 0.4; background: #0a0a0a; padding: 12px; }
+        .frame-card.active { border-color: #fff; opacity: 1; transform: scale(1.05); box-shadow: 0 0 30px rgba(255,255,255,0.1); }
 
-        .timer-btn.active { background: #00f2ea; color: #000; border-color: #00f2ea; }
+        .btn-capture { background: #fff; color: #000; font-family: 'Syne'; font-weight: 900; border-radius: 30px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-capture:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255,255,255,0.3); background: #00f2ea; }
 
-        @media print { .no-print { display: none !important; } }
+        #pdf-content { width: 1000px; position: absolute; left: -9999px; }
+        
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 md:p-10 flex items-center justify-center">
+<body class="p-4 md:p-8 min-h-screen flex flex-col items-center">
 
-<div id="shutter"></div>
+<div id="screen-flash"></div>
 
-<div class="max-w-[1400px] w-full grid grid-cols-1 lg:grid-cols-12 gap-10 no-print">
-    <div class="lg:col-span-3 space-y-6">
-        <div class="glass p-8 rounded-[40px]">
-            <h1 class="text-5xl font-black italic tracking-tighter leading-none mb-2" style="font-family: 'Syne'">APONGSKY</h1>
-            <p class="text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase mb-8">Ultimate v40.1</p>
-            
-            <div class="space-y-6">
-                <div>
-                    <p class="text-[10px] font-bold opacity-20 uppercase mb-3">Caption</p>
-                    <input type="text" id="tag" placeholder="NAME / DATE" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-xs outline-none focus:border-white transition">
+<header class="w-full max-w-[1400px] flex justify-between items-center mb-10">
+    <div class="brand-logo text-4xl uppercase">APONGSKY<span class="text-cyan-500">v50</span></div>
+    <div class="hidden md:block text-[10px] font-bold opacity-30 tracking-[0.5em] uppercase text-right">The Golden Jubilee Edition<br>Propulsion Engine v5.0</div>
+</header>
+
+<div id="main-app" class="max-w-[1400px] w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+    <div class="lg:col-span-3 space-y-6 order-2 lg:order-1">
+        <div class="glass p-6 rounded-[35px]">
+            <p class="text-[10px] font-black opacity-30 mb-6 uppercase tracking-widest text-center">Output Frame</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div onclick="setFrame('classic')" id="f-classic" class="frame-card active text-center">
+                    <div class="aspect-[3/4] bg-white rounded-lg"></div>
+                    <p class="text-[8px] font-black mt-3 uppercase">White</p>
                 </div>
-                
-                <div>
-                    <p class="text-[10px] font-bold opacity-20 uppercase mb-3">Timer</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setTimer(3)" id="t3" class="timer-btn active py-3 rounded-xl border border-white/10 text-[10px] font-bold transition">3s</button>
-                        <button onclick="setTimer(5)" id="t5" class="timer-btn py-3 rounded-xl border border-white/10 text-[10px] font-bold transition">5s</button>
-                    </div>
+                <div onclick="setFrame('dark')" id="f-dark" class="frame-card text-center">
+                    <div class="aspect-[3/4] bg-zinc-900 rounded-lg border border-white/10"></div>
+                    <p class="text-[8px] font-black mt-3 uppercase">Dark</p>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="lg:col-span-6 flex flex-col items-center">
-        <div class="cam-frame w-full">
-            <div class="cam-inner aspect-[3/4]">
-                <video id="video" autoplay playsinline></video>
-                <div class="scan-anim"></div>
-                <div id="countdown" class="absolute inset-0 flex items-center justify-center text-[220px] font-bold text-white hidden z-50"></div>
-            </div>
+        <div class="glass p-6 rounded-[35px] text-center border-cyan-500/20">
+            <p class="text-[9px] font-bold opacity-40 uppercase tracking-[0.3em]">Imprint Label:</p>
+            <h3 class="text-xl font-black italic uppercase tracking-tighter mt-2">STILL ALIVE.</h3>
         </div>
-        <button onclick="startSession()" id="snap-btn" class="btn-finale w-full mt-10 py-8 text-4xl italic tracking-tighter uppercase">START SESSION 📸</button>
     </div>
 
-    <div class="lg:col-span-3">
-        <div class="glass p-6 rounded-[40px] h-full flex flex-col">
-            <p class="text-[10px] font-bold opacity-20 text-center mb-6 uppercase tracking-widest">Master Roll</p>
-            <div id="gallery" class="grid grid-cols-2 gap-3 overflow-y-auto max-h-[500px]"></div>
+    <div class="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
+        <div id="cam-box" class="cam-container aspect-[3/4] w-full">
+            <video id="video" autoplay playsinline></video>
+            <div id="countdown" class="absolute inset-0 flex items-center justify-center text-[200px] font-black text-white hidden z-50 italic" style="font-family: 'Syne'"></div>
+        </div>
+        <button onclick="startSession()" id="snap-btn" class="btn-capture w-full mt-8 py-8 text-3xl italic tracking-tighter uppercase">START EXPERIENCE</button>
+    </div>
+
+    <div class="lg:col-span-3 order-3">
+        <div class="glass p-6 rounded-[35px] h-[450px] flex flex-col">
+            <p class="text-[10px] font-black opacity-30 text-center mb-6 uppercase tracking-widest">Session Roll</p>
+            <div id="gallery" class="grid grid-cols-2 gap-3 overflow-y-auto pr-2"></div>
         </div>
     </div>
 </div>
 
-<div id="modal" class="fixed inset-0 bg-black hidden z-[2000] items-center justify-center p-6">
-    <div class="max-w-6xl w-full glass p-12 rounded-[60px] flex flex-col md:flex-row gap-16 items-center border-white/10">
-        <div class="relative group">
-            <div class="absolute -inset-10 bg-gradient-to-b from-white/20 to-transparent blur-3xl opacity-50"></div>
-            <canvas id="canvas" class="relative w-[300px] md:w-[350px] shadow-[0_50px_100px_rgba(0,0,0,0.5)] bg-white p-2"></canvas>
-        </div>
-        
-        <div class="flex-1 space-y-8">
+<div id="pdf-content"></div>
+
+<div id="modal" class="fixed inset-0 bg-black/95 hidden z-[2000] flex items-center justify-center p-6 backdrop-blur-3xl">
+    <div class="max-w-4xl w-full glass p-10 md:p-14 rounded-[70px] flex flex-col md:flex-row gap-12 items-center border-white/10">
+        <canvas id="display-canvas" class="w-[280px] md:w-[320px] bg-white p-2 shadow-[0_50px_100px_rgba(0,0,0,0.9)]"></canvas>
+        <div class="flex-1 space-y-10 text-center md:text-left">
             <div>
-                <h2 class="text-8xl font-black italic tracking-tighter leading-none mb-4" style="font-family: 'Syne'">THE<br>LEGACY.</h2>
-                <p class="text-sm opacity-40 leading-relaxed font-light">Sesi v40.1 selesai. Siap dipublikasikan.</p>
+                <h2 class="text-8xl font-black italic tracking-tighter leading-[0.8]" style="font-family: 'Syne'">STILL<br>ALIVE.</h2>
+                <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mt-6">Captured via APONGSKY Studio</p>
             </div>
             
             <div class="flex flex-col gap-4">
-                <button onclick="window.print()" class="py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-cyan-400 transition">Print Master Strip</button>
-                <button onclick="download()" class="py-6 border border-white/10 rounded-2xl font-black text-xs uppercase hover:bg-white/5 transition">Download Digital HQ</button>
-                
-                <a href="https://saweria.co/apongsky73" target="_blank" class="py-4 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] text-center hover:bg-yellow-400 hover:text-black transition-all">
-                    ☕ Traktir Kopi via Saweria
-                </a>
-
-                <button onclick="location.reload()" class="py-4 opacity-20 text-[10px] font-bold uppercase hover:opacity-100 transition">Discard & New Session</button>
+                <button onclick="savePDF()" class="py-6 bg-white text-black rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-cyan-400 transition-all duration-500">Download PDF Document 📄</button>
+                <button onclick="location.reload()" class="py-4 opacity-20 text-[10px] font-bold uppercase hover:opacity-100 transition">Discard & Reset</button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="fixed bottom-4 left-0 right-0 text-center no-print">
-    <a href="https://saweria.co/apongsky73" target="_blank" class="text-[9px] font-bold opacity-20 hover:opacity-100 transition uppercase tracking-[0.5em]">
-        APONGSKY v40.1 • Support via Saweria
-    </a>
 </div>
 
 <script>
     const video = document.getElementById('video');
     const gallery = document.getElementById('gallery');
     const countdownEl = document.getElementById('countdown');
-    const shutter = document.getElementById('shutter');
-    
-    // SFX
-    const sfxBeep = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
     const sfxSnap = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3');
-    const sfxDone = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
     
     let poses = [];
-    let selectedTimer = 3;
+    let curFrame = 'classic';
 
     async function init() {
-        try {
-            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
-            video.srcObject = s;
-        } catch(e) { alert("Izinkan akses kamera!"); }
+        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 1080, height: 1440 } });
+        video.srcObject = s;
     }
 
-    function setTimer(s) { 
-        selectedTimer = s;
-        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('t' + s).classList.add('active');
+    function setFrame(f) {
+        curFrame = f;
+        document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('f-' + f).classList.add('active');
     }
 
     async function startSession() {
         poses = []; gallery.innerHTML = '';
-        document.getElementById('snap-btn').disabled = true;
+        const btn = document.getElementById('snap-btn');
+        btn.disabled = true;
+        btn.innerText = "CAPTURING...";
 
         for(let i=1; i<=4; i++) {
-            let c = selectedTimer;
+            let c = 3;
             countdownEl.classList.remove('hidden');
             while(c > 0) {
                 countdownEl.innerText = c;
-                sfxBeep.play();
                 await new Promise(r => setTimeout(r, 1000));
                 c--;
             }
             countdownEl.classList.add('hidden');
-            snap();
-            if(i < 4) await new Promise(r => setTimeout(r, 1200));
+            
+            // FLASH TRIGGER
+            const flash = document.getElementById('screen-flash');
+            flash.classList.add('flash-active');
+            
+            setTimeout(() => {
+                snap();
+                flash.classList.remove('flash-active');
+            }, 50);
+
+            if(i < 4) await new Promise(r => setTimeout(r, 1500));
         }
-        sfxDone.play();
-        render();
+        renderToCanvas();
     }
 
     function snap() {
         sfxSnap.play();
-        shutter.classList.add('shutter-on');
-        setTimeout(() => shutter.classList.remove('shutter-on'), 300);
+        document.getElementById('cam-box').classList.add('shake');
+        setTimeout(() => document.getElementById('cam-box').classList.remove('shake'), 300);
 
         const temp = document.createElement('canvas');
         temp.width = 1080; temp.height = 800;
         const ctx = temp.getContext('2d');
-        ctx.filter = 'contrast(1.1) saturate(1.1)';
         ctx.translate(1080, 0); ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0, 1080, 800);
         
-        const data = temp.toDataURL('image/jpeg', 0.9);
+        const data = temp.toDataURL('image/jpeg', 0.95);
         poses.push(data);
         const img = document.createElement('img');
-        img.src = data; img.className = "rounded-2xl border border-white/10 shadow-2xl";
+        img.src = data; img.className = "rounded-2xl border border-white/5 shadow-2xl transition-all duration-500 hover:scale-105";
         gallery.prepend(img);
     }
 
-    async function render() {
-        const cv = document.getElementById('canvas');
+    async function renderToCanvas() {
+        const cv = document.getElementById('display-canvas');
         const ctx = cv.getContext('2d');
         cv.width = 1000; cv.height = 1600;
-        ctx.fillStyle = '#000';
+
+        ctx.fillStyle = (curFrame === 'dark') ? '#080808' : '#ffffff';
         ctx.fillRect(0, 0, 1000, 1600);
 
         for(let i=0; i<4; i++) {
             const img = new Image(); img.src = poses[i];
             await new Promise(r => img.onload = r);
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(40, 40 + (i*360), 420, 320);
-            ctx.drawImage(img, 45, 45 + (i*360), 410, 310);
-            ctx.fillRect(540, 40 + (i*360), 420, 320);
-            ctx.drawImage(img, 545, 45 + (i*360), 410, 310);
+            
+            const yPos = 40 + (i * 365);
+            ctx.fillStyle = (curFrame === 'dark') ? '#000' : '#f5f5f5';
+            ctx.fillRect(40, yPos, 440, 330);
+            ctx.drawImage(img, 45, yPos+5, 430, 320);
+            ctx.fillRect(520, yPos, 440, 330);
+            ctx.drawImage(img, 525, yPos+5, 430, 320);
         }
 
-        ctx.textAlign = 'center'; ctx.fillStyle = '#444'; ctx.font = '700 25px Space Grotesk';
-        ctx.fillText(document.getElementById('tag').value || "APONGSKY ULTIMATE v40.1", 500, 1530);
-        
+        ctx.textAlign = 'center';
+        ctx.fillStyle = (curFrame === 'dark') ? '#333' : '#bbb';
+        ctx.font = '900 32px Syne';
+        ctx.fillText("STILL ALIVE.", 260, 1540);
+        ctx.fillText("STILL ALIVE.", 740, 1540);
+
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function download() {
-        const a = document.createElement('a');
-        a.download = `apongsky-hq-${Date.now()}.png`;
-        a.href = document.getElementById('canvas').toDataURL();
-        a.click();
+    function savePDF() {
+        const canvas = document.getElementById('display-canvas');
+        const element = document.getElementById('pdf-content');
+        element.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 1.0)}" style="width: 100%">`;
+
+        const opt = {
+            margin: 0,
+            filename: `STILL-ALIVE-v50-${Date.now()}.pdf`,
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
 
     window.onload = init;
