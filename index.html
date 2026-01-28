@@ -3,186 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILL ALIVE - Viral Photobooth</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>STILL ALIVE PHOTOBOOTH - OFFICIAL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Special+Elite&family=Bangers&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --primary: #00f2ff; --dark: #0d0221; }
-        body { margin: 0; font-family: 'Courier New', Courier, monospace; background: var(--dark); color: white; overflow-x: hidden; text-align: center; }
-        
-        #main-booth { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #video-container { position: relative; width: 320px; height: 240px; border: 4px solid var(--primary); border-radius: 10px; overflow: hidden; background: #000; transform: scaleX(-1); }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        #flash { position: absolute; top:0; left:0; width:100%; height:100%; background:white; display:none; z-index: 10; }
-        
-        .btn-capture { margin-top: 20px; padding: 15px 40px; font-size: 18px; font-weight: bold; color: var(--dark); background: var(--primary); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px var(--primary); transition: 0.3s; }
-        .btn-capture:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); }
+        :root {
+            --bg: #000000; --card: #111111; --text: #ffffff;
+            --accent: #ff0000; --neon: #00ff41; --spotify: #1DB954;
+        }
 
-        #selector-ui { display: none; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; padding: 20px; }
-        .card { background: #1a1a3a; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); background: #252550; }
-        .preview { width: 100%; height: 120px; border-radius: 4px; margin-bottom: 5px; }
+        body {
+            background-color: var(--bg); color: var(--text);
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
 
-        #qr-screen { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        #qrcode { background: white; padding: 20px; border-radius: 10px; }
+        /* HEADER & LOGO */
+        .header { padding: 40px 20px 20px; text-align: center; }
+        .logo-text { font-size: 45px; font-weight: 900; font-style: italic; letter-spacing: -3px; margin: 0; text-transform: uppercase; }
         
-        .brand { font-size: 24px; font-weight: bold; margin-bottom: 20px; letter-spacing: 5px; color: var(--primary); }
-        
-        /* Music Floating Icon */
-        #music-ctrl { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: var(--dark); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 200; box-shadow: 0 0 10px var(--primary); }
+        /* TICKER JALAN */
+        .ticker-container { width: 100%; background: var(--accent); color: #000; padding: 5px 0; overflow: hidden; border-y: 2px solid #000; margin-bottom: 20px; }
+        .ticker-text { white-space: nowrap; display: inline-block; animation: marquee 15s linear infinite; font-weight: 900; font-size: 14px; }
+        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+        /* SCREENS */
+        .screen { display: none; width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box; }
+        .active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* CAMERA BOX - VIBE MAHAL */
+        .camera-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; background: #111; border: 4px solid #333; overflow: hidden; box-shadow: 0 0 30px rgba(255,0,0,0.2); }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* Preview tetap mirror buat kenyamanan user */
+        .scanline-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 3px 100%; pointer-events: none; }
+        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; font-weight: 900; color: var(--neon); z-index: 10; }
+
+        /* UI INPUT */
+        .card { background: var(--card); padding: 25px; border: 1px solid #222; border-radius: 2px; }
+        label { font-size: 10px; color: #666; font-weight: 900; display: block; margin-bottom: 5px; }
+        select, input { width: 100%; padding: 12px; background: #000; color: #fff; border: 1px solid #333; margin-bottom: 20px; font-weight: 900; }
+        .btn-shoot { background: #fff; color: #000; border: none; padding: 20px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-shoot:hover { background: var(--accent); color: #fff; }
+
+        /* STRIP RESULT AREA (PENTING: GAK BOLEH SAMPAH) */
+        #capture-area { width: 280px; margin: auto; padding: 15px; position: relative; transition: 0.3s; }
+        #result-grid { display: flex; flex-direction: column; gap: 10px; }
+        #result-grid img { width: 100%; display: block; object-fit: cover; }
+        .footer-logo { text-align: center; padding: 15px 0 5px; font-weight: 900; border-top: 1px solid rgba(0,0,0,0.1); }
+
+        /* FRAME THEMES */
+        .frame-grunge { background: #000; color: #fff !important; border: 10px solid #111; }
+        .frame-grunge img { filter: grayscale(1) contrast(1.5); }
+        .frame-music { background: #121212; color: #fff !important; padding-bottom: 30px; }
+        .frame-gemoy { background: #ffb7c5; border: 10px solid #fff; }
+        .frame-gemoy img { border-radius: 15px; border: 3px solid #fff; }
+        .frame-newspaper { background: #e8dcc4; font-family: 'Special Elite'; border: 4px double #5d4037; }
+        .frame-cartoon { background: #ffd60a; border: 6px solid #000; font-family: 'Bangers'; }
+        .frame-cartoon img { border: 4px solid #000; box-shadow: 6px 6px 0px #000; }
+
+        .selector-box { display: flex; gap: 15px; justify-content: center; margin: 20px 0; }
+        .dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #333; cursor: pointer; transition: 0.2s; }
+        .dot:hover { transform: scale(1.2); border-color: #fff; }
+
+        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 9999; }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
-    </audio>
+    <div id="flash"></div>
 
-    <div id="main-booth">
-        <div class="brand">STILL ALIVE</div>
-        <div id="video-container">
-            <video id="video" autoplay playsinline></video>
-            <div id="flash"></div>
+    <div class="header">
+        <h1 class="logo-text">STILL ALIVE</h1>
+    </div>
+
+    <div class="ticker-container">
+        <div class="ticker-text">STILL ALIVE PHOTOBOOTH OFFICIAL • NO SYSTEM FAILURE • STILL ALIVE PHOTOBOOTH OFFICIAL • NO SYSTEM FAILURE •</div>
+    </div>
+
+    <section id="setup" class="screen active">
+        <div class="card">
+            <label>ACCESS KEY</label>
+            <input type="text" id="voucher" placeholder="OPTIONAL">
+            
+            <label>SHOTS LIMIT</label>
+            <select id="total">
+                <option value="1">1 SHOT</option>
+                <option value="4" selected>4 SHOTS (STRIP)</option>
+                <option value="6">6 SHOTS</option>
+            </select>
+
+            <label>PREPARE TIME (SECONDS)</label>
+            <select id="timer">
+                <option value="3000" selected>3 SECONDS</option>
+                <option value="5000">5 SECONDS</option>
+                <option value="8000">8 SECONDS</option>
+            </select>
+
+            <button class="btn-shoot" onclick="init()">START SESSION</button>
         </div>
-        <button class="btn-capture" onclick="takeAction()">START CAPTURE</button>
-        <p id="timer" style="font-size: 40px; margin-top: 20px;"></p>
-    </div>
+    </section>
 
-    <div id="selector-ui">
-        <h2 style="color: var(--primary);">SELECT YOUR MOOD</h2>
-        <div class="grid" id="grid"></div>
-    </div>
+    <section id="camera" class="screen">
+        <div class="camera-wrapper">
+            <div id="countdown"></div>
+            <div class="scanline-effect"></div>
+            <video id="video" autoplay playsinline></video>
+        </div>
+        <p id="info" style="text-align:center; color:var(--neon); font-weight:900; letter-spacing:3px; margin-top:20px;"></p>
+    </section>
 
-    <div id="qr-screen">
-        <h2 style="color: var(--primary);">YEAY! SCAN QR TO DOWNLOAD</h2>
-        <div id="qrcode"></div>
-        <button class="btn-capture" onclick="location.reload()" style="margin-top: 30px;">TAKE AGAIN</button>
-    </div>
+    <section id="editor" class="screen">
+        <div id="capture-area" class="frame-grunge">
+            <div id="result-grid"></div>
+            
+            <div id="music-ui" style="display:none; padding:10px; color:#fff;">
+                <p style="margin:0; font-size:12px; font-weight:900;">STILL ALIVE - SESSION VOL. 1</p>
+                <div style="width:100%; height:3px; background:#333; margin:5px 0;"><div style="width:75%; height:100%; background:var(--spotify);"></div></div>
+            </div>
 
-    <div id="music-ctrl" onclick="toggleMusic()">🎵</div>
+            <div class="footer-logo">
+                STILL ALIVE
+                <br><small id="sid" style="font-size:8px; opacity:0.5;"></small>
+            </div>
+        </div>
 
+        <div class="selector-box">
+            <div class="dot" style="background:#000" onclick="setFrame('grunge')"></div>
+            <div class="dot" style="background:#ffd60a" onclick="setFrame('cartoon')"></div>
+            <div class="dot" style="background:#ffb7c5" onclick="setFrame('gemoy')"></div>
+            <div class="dot" style="background:#e8dcc4" onclick="setFrame('newspaper')"></div>
+            <div class="dot" style="background:#1DB954" onclick="setFrame('music')"></div>
+        </div>
+
+        <button class="btn-shoot" onclick="download()">DOWNLOAD PDF</button>
+        <div id="qr-box" style="display:none; background:#fff; padding:15px; margin:20px auto; width:fit-content;">
+            <div id="qrcode"></div>
+        </div>
+        <button class="btn-shoot" style="background:transparent; color:#444; font-size:10px; margin-top:10px;" onclick="location.reload()">RETAKE</button>
+    </section>
+
+    <audio id="click" src="https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3"></audio>
     <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
+        let photos = [];
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const bgMusic = document.getElementById('bg-music');
-        let snaps = [];
+        const click = document.getElementById('click');
+        const flash = document.getElementById('flash');
 
-        navigator.mediaDevices.getUserMedia({ video: true }).then(s => video.srcObject = s);
+        async function init() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+                document.getElementById('setup').classList.remove('active');
+                document.getElementById('camera').classList.add('active');
+                
+                const count = parseInt(document.getElementById('total').value);
+                const delay = parseInt(document.getElementById('timer').value);
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playCekrek() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'white' || 'noise';
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playPop() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function toggleMusic() {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                document.getElementById('music-ctrl').innerText = '⏸️';
-            } else {
-                bgMusic.pause();
-                document.getElementById('music-ctrl').innerText = '🎵';
-            }
-        }
-
-        async function takeAction() {
-            // Musik otomatis main pas mulai foto
-            bgMusic.play().catch(() => console.log("Music ready"));
-            document.getElementById('music-ctrl').innerText = '⏸️';
-
-            snaps = [];
-            const timerDisplay = document.getElementById('timer');
-            for(let i=0; i<4; i++) {
-                let countdown = 3;
-                while(countdown > 0) {
-                    timerDisplay.innerText = countdown;
-                    await new Promise(r => setTimeout(r, 1000));
-                    countdown--;
+                for(let i=0; i<count; i++) {
+                    document.getElementById('info').innerText = `READY FOR SHOT ${i+1}/${count}`;
+                    for(let j=3; j>0; j--) {
+                        document.getElementById('countdown').innerText = j;
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                    document.getElementById('countdown').innerText = "!!!";
+                    snap();
+                    await new Promise(r => setTimeout(r, delay));
                 }
-                timerDisplay.innerText = "CHEESE!";
-                playCekrek();
-                document.getElementById('flash').style.display='block';
-                setTimeout(()=>document.getElementById('flash').style.display='none', 100);
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                ctx.save(); ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
-                ctx.drawImage(video, 0, 0); ctx.restore();
-                snaps.push(canvas.toDataURL('image/jpeg', 0.8));
-                await new Promise(r => setTimeout(r, 500));
-            }
-            timerDisplay.innerText = "";
-            showGallery();
+                done();
+            } catch(e) { alert("Kamera Error Bos!"); }
         }
 
-        function showGallery() {
-            document.getElementById('main-booth').style.display = 'none';
-            document.getElementById('selector-ui').style.display = 'block';
-            const g = document.getElementById('grid');
-            const moods = [
-                { n: 'KUROMI', bg: '#2D033B', tx: '#C147E9', char: '😈', mode: 'cyber' },
-                { n: 'MELODY', bg: '#FFC1CC', tx: '#FB607F', char: '🎀', mode: 'gemoy' },
-                { n: 'VINTAGE', bg: '#353935', tx: '#E9FF70', char: '📼', mode: 'analog' },
-                { n: 'LUXURY', bg: '#000000', tx: '#FFFFFF', char: '✨', mode: 'magazine' }
-            ];
-            for(let i=0; i<1000; i++) {
-                const mood = moods[i % moods.length];
-                const h = (i * 137.5) % 360;
-                const finalBg = (i < 4) ? mood.bg : `hsl(${h}, 60%, 90%)`;
-                const finalTx = (i < 4) ? mood.tx : `hsl(${h}, 70%, 30%)`;
-                const d = document.createElement('div');
-                d.className = 'card';
-                d.innerHTML = `<div class="preview" style="background:${finalBg}; border:2px solid ${finalTx}; display:flex; align-items:center; justify-content:center; color:${finalTx}; font-size:12px;">${mood.char}</div><small>#${i+1}</small>`;
-                d.onclick = () => { playPop(); savePDF(finalBg, finalTx, mood.mode, mood.char); };
-                g.appendChild(d);
-            }
+        function snap() {
+            click.play();
+            flash.style.opacity = '1'; setTimeout(() => flash.style.opacity = '0', 100);
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            
+            // --- LOGIC ANTI MIRROR (BIAR GAK KEBAlIK) ---
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0);
+            
+            photos.push(canvas.toDataURL('image/jpeg', 0.9));
+            document.getElementById('countdown').innerText = "";
         }
 
-        function savePDF(bg, tx, mode, char) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', [50, 150]);
-            doc.setFillColor(bg); doc.rect(0, 0, 50, 150, 'F');
-            doc.setTextColor(tx);
-            doc.setFont("courier", "bold"); doc.setFontSize(10);
-            doc.text("STILL ALIVE", 25, 12, {align:'center'});
-            let y = 20;
-            snaps.forEach((img, i) => {
-                const w = 38, h = 26, x = 6;
-                if(mode === 'analog') { doc.setFillColor(0); doc.rect(2, y+10, 2, 4, 'F'); doc.rect(46, y+10, 2, 4, 'F'); }
-                doc.addImage(img, 'JPEG', x, y, w, h);
-                doc.setDrawColor(tx); doc.rect(x, y, w, h, 'S');
-                y += h + 3;
-                if(i === 1) { doc.setFontSize(14); doc.text(char, 25, y + 4, {align:'center'}); y += 8; }
+        function done() {
+            document.getElementById('camera').classList.remove('active');
+            document.getElementById('editor').classList.add('active');
+            const grid = document.getElementById('result-grid');
+            photos.forEach(s => {
+                const img = document.createElement('img'); img.src = s; grid.appendChild(img);
             });
-            doc.setFillColor(tx);
-            for(let j=0; j<25; j++) { doc.rect(8 + (j*1.4), 142, Math.random()*1.2, 4, 'F'); }
-            doc.output('blob').then(b => {
-                const fd = new FormData(); fd.append('file', b, 'stillalive.pdf');
-                fetch('https://file.io', { method: 'POST', body: fd })
-                .then(r => r.json()).then(d => {
-                    document.getElementById('qr-screen').style.display='flex';
-                    document.getElementById('qrcode').innerHTML = '';
-                    new QRCode(document.getElementById("qrcode"), { text: d.link, width: 200, height: 200 });
-                });
-            });
+            document.getElementById('sid').innerText = "REF-ID: " + Math.random().toString(36).substr(2, 7).toUpperCase();
+        }
+
+        function setFrame(t) {
+            const area = document.getElementById('capture-area');
+            const music = document.getElementById('music-ui');
+            area.className = 'frame-' + t;
+            music.style.display = (t === 'music') ? 'block' : 'none';
+        }
+
+        async function download() {
+            const area = document.getElementById('capture-area');
+            const isMob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const cv = await html2canvas(area, { scale: 2 });
+            
+            if(isMob) {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', [80, 220]);
+                pdf.addImage(cv.toDataURL('image/png'), 'PNG', 0, 0, 80, 220);
+                pdf.save("STILLALIVE_STRIP.pdf");
+            } else {
+                document.getElementById('qr-box').style.display = 'block';
+                document.getElementById('qrcode').innerHTML = "";
+                new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 120, height: 120 });
+            }
         }
     </script>
 </body>
