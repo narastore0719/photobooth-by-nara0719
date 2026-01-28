@@ -1,149 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILL ALIVE | PRESTIGE</title>
+    <title>STILL ALIVE - Viral Photobooth</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --accent: #00f2ff; --bg: #0a0a0a; --panel: #151515; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; text-align: center; }
+        :root { --primary: #00f2ff; --dark: #0d0221; }
+        body { margin: 0; font-family: 'Courier New', Courier, monospace; background: var(--dark); color: white; overflow-x: hidden; text-align: center; }
         
-        #welcome-screen { 
-            position: fixed; inset: 0; background: var(--bg); z-index: 10000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: opacity 1s; 
-        }
-        .loader-text { font-size: 2.5rem; font-weight: 200; letter-spacing: 12px; text-transform: uppercase; }
-
-        header { padding: 40px 20px; }
-        .logo { font-weight: 900; letter-spacing: 15px; color: var(--accent); margin: 0; font-size: 1.2rem; }
+        #main-booth { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #video-container { position: relative; width: 320px; height: 240px; border: 4px solid var(--primary); border-radius: 10px; overflow: hidden; background: #000; transform: scaleX(-1); }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        #flash { position: absolute; top:0; left:0; width:100%; height:100%; background:white; display:none; z-index: 10; }
         
-        .video-container { 
-            position: relative; width: 90%; max-width: 500px; margin: 0 auto;
-            border-radius: 20px; overflow: hidden; border: 1px solid #333;
-        }
-        video { width: 100%; transform: scaleX(-1); display: block; }
+        .btn-capture { margin-top: 20px; padding: 15px 40px; font-size: 18px; font-weight: bold; color: var(--dark); background: var(--primary); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px var(--primary); transition: 0.3s; }
+        .btn-capture:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); }
 
-        #selector-ui { display: none; padding: 40px 20px; background: var(--bg); position: relative; z-index: 500; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
-        .card { background: var(--panel); border: 1px solid #222; border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
-        .preview { width: 100%; aspect-ratio: 3/4; border-radius: 6px; margin-bottom: 8px; }
+        #selector-ui { display: none; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: #1a1a3a; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); background: #252550; }
+        .preview { width: 100%; height: 120px; border-radius: 4px; margin-bottom: 5px; }
 
-        .btn { background: #fff; color: #000; border: none; padding: 15px 40px; font-weight: 700; border-radius: 50px; cursor: pointer; margin: 20px; letter-spacing: 2px; }
+        #qr-screen { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        #qrcode { background: white; padding: 20px; border-radius: 10px; }
         
-        #support-btn { position: fixed; bottom: 20px; right: 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(0,242,255,0.2); color: var(--accent); padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 11px; z-index: 9000; }
-
-        #qr-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .brand { font-size: 24px; font-weight: bold; margin-bottom: 20px; letter-spacing: 5px; color: var(--primary); }
+        
+        /* Music Floating Icon */
+        #music-ctrl { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: var(--dark); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 200; box-shadow: 0 0 10px var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="welcome-screen"><div class="loader-text">Still Alive</div></div>
-    <div id="flash" style="position:fixed; inset:0; background:white; z-index:10001; display:none;"></div>
-
-    <header><p class="logo">STILL ALIVE</p></header>
+    <audio id="bg-music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="main-booth">
-        <div class="video-container"><video id="webcam" autoplay playsinline></video></div>
-        <button class="btn" onclick="takeAction()">START CAPTURE</button>
+        <div class="brand">STILL ALIVE</div>
+        <div id="video-container">
+            <video id="video" autoplay playsinline></video>
+            <div id="flash"></div>
+        </div>
+        <button class="btn-capture" onclick="takeAction()">START CAPTURE</button>
+        <p id="timer" style="font-size: 40px; margin-top: 20px;"></p>
     </div>
 
     <div id="selector-ui">
-        <h2 style="font-weight:200; letter-spacing:5px;">CHOOSE YOUR VIBE</h2>
+        <h2 style="color: var(--primary);">SELECT YOUR MOOD</h2>
         <div class="grid" id="grid"></div>
     </div>
 
     <div id="qr-screen">
-        <div id="qrcode" style="padding:20px; background:#fff; border-radius:20px;"></div>
-        <button class="btn" onclick="location.reload()">DONE</button>
+        <h2 style="color: var(--primary);">YEAY! SCAN QR TO DOWNLOAD</h2>
+        <div id="qrcode"></div>
+        <button class="btn-capture" onclick="location.reload()" style="margin-top: 30px;">TAKE AGAIN</button>
     </div>
 
-    <div id="support-btn" onclick="alert('Chat Apongsky di 083825256323 jika error!')">HELP & BUG</div>
-    <canvas id="c" style="display:none;"></canvas>
+    <div id="music-ctrl" onclick="toggleMusic()">🎵</div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
-        let snaps = [];
-        const video = document.getElementById('webcam');
-        const canvas = document.getElementById('c');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const bgMusic = document.getElementById('bg-music');
+        let snaps = [];
 
-        window.onload = async () => {
-            const s = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = s;
-            setTimeout(() => { document.getElementById('welcome-screen').style.opacity='0'; 
-            setTimeout(()=>document.getElementById('welcome-screen').style.display='none', 1000); }, 2000);
-        };
+        navigator.mediaDevices.getUserMedia({ video: true }).then(s => video.srcObject = s);
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playCekrek() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'white' || 'noise';
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playPop() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                document.getElementById('music-ctrl').innerText = '⏸️';
+            } else {
+                bgMusic.pause();
+                document.getElementById('music-ctrl').innerText = '🎵';
+            }
+        }
 
         async function takeAction() {
+            // Musik otomatis main pas mulai foto
+            bgMusic.play().catch(() => console.log("Music ready"));
+            document.getElementById('music-ctrl').innerText = '⏸️';
+
             snaps = [];
+            const timerDisplay = document.getElementById('timer');
             for(let i=0; i<4; i++) {
-                await new Promise(r => setTimeout(r, 2500));
+                let countdown = 3;
+                while(countdown > 0) {
+                    timerDisplay.innerText = countdown;
+                    await new Promise(r => setTimeout(r, 1000));
+                    countdown--;
+                }
+                timerDisplay.innerText = "CHEESE!";
+                playCekrek();
                 document.getElementById('flash').style.display='block';
                 setTimeout(()=>document.getElementById('flash').style.display='none', 100);
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1);
+                ctx.save(); ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
                 ctx.drawImage(video, 0, 0); ctx.restore();
                 snaps.push(canvas.toDataURL('image/jpeg', 0.8));
+                await new Promise(r => setTimeout(r, 500));
             }
+            timerDisplay.innerText = "";
             showGallery();
         }
 
         function showGallery() {
-            document.getElementById('main-booth').style.display='none';
-            document.getElementById('selector-ui').style.display='block';
+            document.getElementById('main-booth').style.display = 'none';
+            document.getElementById('selector-ui').style.display = 'block';
             const g = document.getElementById('grid');
-            const masters = [
-                { n: 'KORAN VIRAL', bg: '#f4ecd8', tx: '#000', m: 'news' },
-                { n: 'STRUK PARKIR', bg: '#fff', tx: '#000', m: 'ticket' },
-                { n: 'PRESTIGE CYAN', bg: '#050505', tx: '#00f2ff', m: 'minimal' }
+            const moods = [
+                { n: 'KUROMI', bg: '#2D033B', tx: '#C147E9', char: '😈', mode: 'cyber' },
+                { n: 'MELODY', bg: '#FFC1CC', tx: '#FB607F', char: '🎀', mode: 'gemoy' },
+                { n: 'VINTAGE', bg: '#353935', tx: '#E9FF70', char: '📼', mode: 'analog' },
+                { n: 'LUXURY', bg: '#000000', tx: '#FFFFFF', char: '✨', mode: 'magazine' }
             ];
-
-            // 20 Masters (Koran, Parkir)
-            for(let i=0; i<20; i++) {
-                const p = masters[i % masters.length];
-                const d = document.createElement('div'); d.className='card';
-                d.innerHTML = `<div class="preview" style="background:${p.bg}; border:1px solid ${p.tx}"></div><small>${p.n}</small>`;
-                d.onclick = () => savePDF(p.bg, p.tx, p.m);
-                g.appendChild(d);
-            }
-            // Hidden Variations
             for(let i=0; i<1000; i++) {
-                const h = i * 2.5;
-                const d = document.createElement('div'); d.className='card';
-                d.innerHTML = `<div class="preview" style="background:hsl(${h},10%,10%); border:1px solid hsl(${h},100%,50%)"></div><small>THEME #${i+1}</small>`;
-                d.onclick = () => savePDF(`hsl(${h},10%,5%)`, `hsl(${h},100%,50%)`, 'minimal');
+                const mood = moods[i % moods.length];
+                const h = (i * 137.5) % 360;
+                const finalBg = (i < 4) ? mood.bg : `hsl(${h}, 60%, 90%)`;
+                const finalTx = (i < 4) ? mood.tx : `hsl(${h}, 70%, 30%)`;
+                const d = document.createElement('div');
+                d.className = 'card';
+                d.innerHTML = `<div class="preview" style="background:${finalBg}; border:2px solid ${finalTx}; display:flex; align-items:center; justify-content:center; color:${finalTx}; font-size:12px;">${mood.char}</div><small>#${i+1}</small>`;
+                d.onclick = () => { playPop(); savePDF(finalBg, finalTx, mood.mode, mood.char); };
                 g.appendChild(d);
             }
         }
 
-        function savePDF(bg, tx, mode) {
+        function savePDF(bg, tx, mode, char) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', [100, 150]);
-            doc.setFillColor(bg); doc.rect(0,0,100,150,'F');
+            const doc = new jsPDF('p', 'mm', [50, 150]);
+            doc.setFillColor(bg); doc.rect(0, 0, 50, 150, 'F');
             doc.setTextColor(tx);
-
-            if(mode==='news'){
-                doc.setFontSize(14); doc.text("STILL ALIVE DAILY", 50, 15, {align:'center'});
-                doc.setDrawColor(tx); doc.line(10, 18, 90, 18);
-            } else if(mode==='ticket') {
-                doc.setFontSize(10); doc.text("OFFICIAL RECEIPT", 50, 12, {align:'center'});
-            }
-
-            let x=10, y=25, w=35, h=25;
+            doc.setFont("courier", "bold"); doc.setFontSize(10);
+            doc.text("STILL ALIVE", 25, 12, {align:'center'});
+            let y = 20;
             snaps.forEach((img, i) => {
+                const w = 38, h = 26, x = 6;
+                if(mode === 'analog') { doc.setFillColor(0); doc.rect(2, y+10, 2, 4, 'F'); doc.rect(46, y+10, 2, 4, 'F'); }
                 doc.addImage(img, 'JPEG', x, y, w, h);
                 doc.setDrawColor(tx); doc.rect(x, y, w, h, 'S');
-                if (i % 2 === 0) { x = 55; } else { x = 10; y += h + 5; }
+                y += h + 3;
+                if(i === 1) { doc.setFontSize(14); doc.text(char, 25, y + 4, {align:'center'}); y += 8; }
             });
-
+            doc.setFillColor(tx);
+            for(let j=0; j<25; j++) { doc.rect(8 + (j*1.4), 142, Math.random()*1.2, 4, 'F'); }
             doc.output('blob').then(b => {
-                const fd = new FormData(); fd.append('file', b, 'booth.pdf');
+                const fd = new FormData(); fd.append('file', b, 'stillalive.pdf');
                 fetch('https://file.io', { method: 'POST', body: fd })
                 .then(r => r.json()).then(d => {
                     document.getElementById('qr-screen').style.display='flex';
+                    document.getElementById('qrcode').innerHTML = '';
                     new QRCode(document.getElementById("qrcode"), { text: d.link, width: 200, height: 200 });
                 });
             });
