@@ -1,225 +1,222 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APONGSKY STUDIO v220 | ULTIMATE ARCHIVE</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STILL ALIVE | V1000++ BY APONGSKY</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
-        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; touch-action: manipulation; overflow-x: hidden; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .preview-box { position: relative; width: 100%; max-width: 450px; aspect-ratio: 3/4; border-radius: 30px; overflow: hidden; background: #111; border: 4px solid #222; }
-        #video-feed { width: 100%; height: 100%; object-cover: cover; transform: scaleX(-1); }
-        .frame-item { min-width: 90px; height: 90px; border-radius: 20px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; text-align: center; border: 2px solid transparent; transition: 0.3s; cursor: pointer; flex-shrink: 0; padding: 5px; color: #666; }
-        .frame-item.active { border-color: #00f2ff; background: #fff; color: #000; transform: scale(1.05); }
-        .tab-btn { transition: 0.3s; position: relative; font-size: 10px; font-weight: 900; opacity: 0.4; white-space: nowrap; text-transform: uppercase; }
-        .tab-btn.active { color: #00f2ff; opacity: 1 !important; }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 2px; background: #00f2ff; }
-        .flash-effect { animation: flashAnim 0.15s ease-out; }
-        @keyframes flashAnim { from { opacity: 0.8; } to { opacity: 0; } }
+        /* --- ALL-IN-ONE CSS --- */
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Cinematic Welcome Screen */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: opacity 1s ease;
+        }
+        .glitch-title {
+            color: #ff0000; font-size: 3.5rem; letter-spacing: 12px;
+            font-weight: 900; margin: 0; animation: pulse 1.5s infinite;
+        }
+        .loading-bar-bg { width: 200px; height: 2px; background: #1a1a1a; margin-top: 25px; overflow: hidden; }
+        #loading-bar-fill { width: 0%; height: 100%; background: #ff0000; transition: width 3s ease; }
+
+        /* Camera & Flash */
+        #flash-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 10001; display: none; opacity: 0;
+        }
+        #camera-frame {
+            position: relative; width: 90%; max-width: 640px; margin-top: 20px;
+            border: 4px solid #1a1a1a; background: #050505; border-radius: 8px;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+        }
+        video { width: 100%; display: block; border-radius: 4px; }
+
+        /* UI Elements */
+        header { text-align: center; padding: 40px 0 20px; }
+        .branding { color: #ff0000; letter-spacing: 8px; font-weight: 900; margin: 0; }
+        #counter-text { color: #444; font-size: 11px; margin-top: 8px; }
+        .live-pulse { color: #ff0000; animation: blink 1s infinite; }
+
+        .btn-container { margin: 30px 0; display: flex; gap: 20px; }
+        .btn-stillalive {
+            background: #ff0000; color: #fff; border: none; padding: 15px 35px;
+            font-weight: bold; cursor: pointer; border-radius: 2px;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+        }
+        .btn-stillalive:hover { background: #fff; color: #000; }
+
+        /* Download Overlay */
+        #download-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); z-index: 9999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        #qr-container { background: #fff; padding: 25px; border-radius: 12px; }
+
+        #saweria-link {
+            position: fixed; bottom: 20px; right: 20px; background: #faad14;
+            color: #000; padding: 12px 24px; border-radius: 50px;
+            text-decoration: none; font-weight: bold; font-size: 13px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Animations */
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.02); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #error-msg { color: #ff0000; padding: 40px; text-align: center; display: none; }
     </style>
 </head>
-<body class="flex flex-col items-center min-h-screen pb-24">
+<body>
 
-    <div class="w-full flex justify-between items-center p-5 bg-black/80 backdrop-blur-xl sticky top-0 z-50 border-b border-white/5">
-        <div class="flex flex-col">
-            <h1 class="font-black text-lg tracking-tighter leading-none">APONGSKY<span class="text-cyan-400">.v220</span></h1>
-            <span class="text-[8px] opacity-40 font-bold tracking-[0.3em]">OBLITERATOR EDITION</span>
+    <div id="welcome-screen">
+        <h1 class="glitch-title">STILL ALIVE</h1>
+        <p style="color: #666; font-size: 10px; letter-spacing: 4px;">BY APONGSKY</p>
+        <div class="loading-bar-bg"><div id="loading-bar-fill"></div></div>
+    </div>
+
+    <div id="flash-overlay"></div>
+
+    <header>
+        <h1 class="branding">STILL ALIVE</h1>
+        <div id="counter-text">
+            <span class="live-pulse">●</span> <span id="count-val">...</span> CAPTURES WORLDWIDE
         </div>
-        <button onclick="window.open('https://saweria.co/apongsky')" class="bg-yellow-400 text-black text-[10px] font-black px-4 py-2 rounded-full shadow-lg shadow-yellow-400/20 active:scale-95 transition">SUPPORT DEV ☕</button>
-    </div>
+    </header>
 
-    <div class="mt-6 preview-box shadow-2xl">
-        <video id="video-feed" autoplay playsinline></video>
-        <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden drop-shadow-2xl"></div>
-        <div id="flash-overlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
-    </div>
-
-    <div class="w-full max-w-[450px] px-6 mt-8">
-        <div class="flex bg-[#111] p-1.5 rounded-2xl border border-white/5">
-            <button onclick="setGrid(1)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">1 FOTO</button>
-            <button onclick="setGrid(4)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl bg-white text-black transition">4 FOTO</button>
-            <button onclick="setGrid(6)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">6 FOTO</button>
-            <button onclick="setGrid(8)" class="grid-btn flex-1 py-2 text-[10px] font-black rounded-xl transition">8 FOTO</button>
+    <div id="camera-frame">
+        <video id="v-stream" autoplay playsinline></video>
+        <div id="error-msg">
+            [ CAMERA ACCESS DENIED ]<br>PLEASE ALLOW CAMERA PERMISSION & REFRESH.
         </div>
+        <canvas id="c-hidden" style="display:none;"></canvas>
     </div>
 
-    <div class="w-full overflow-x-auto flex gap-6 px-8 mt-8 no-scrollbar scroll-smooth">
-        <button onclick="filterCat('vibes', this)" class="tab-btn active">☁️ Vibes</button>
-        <button onclick="filterCat('viral', this)">🔥 Viral</button>
-        <button onclick="filterCat('fashion', this)">👠 Fashion</button>
-        <button onclick="filterCat('retro', this)">🎞️ Retro</button>
-        <button onclick="filterCat('extreme', this)">💀 Extreme</button>
+    <div class="btn-container">
+        <button class="btn-stillalive" onclick="captureSession(4)">4 GRIDS</button>
+        <button class="btn-stillalive" onclick="captureSession(1)">SINGLE</button>
     </div>
 
-    <div id="frame-container" class="w-full flex overflow-x-auto gap-4 px-8 mt-6 no-scrollbar">
-        </div>
-
-    <div class="fixed bottom-6 w-full max-w-[450px] px-6 z-50">
-        <button id="snap-btn" onclick="startSession()" class="w-full py-5 bg-white text-black font-black rounded-[28px] text-lg shadow-[0_15px_40px_rgba(255,255,255,0.15)] active:scale-90 transition-all duration-300">
-            JEPET SEKARANG 📸
-        </button>
+    <div id="download-overlay">
+        <div id="qr-container"></div>
+        <p style="margin-top: 25px; letter-spacing: 3px; font-weight: bold;">SCAN TO DOWNLOAD PDF</p>
+        <button class="btn-stillalive" style="margin-top: 15px;" onclick="location.reload()">RESTART</button>
     </div>
 
-    <div id="result-modal" class="fixed inset-0 bg-black hidden z-[100] flex flex-col items-center justify-center p-6 backdrop-blur-3xl">
-        <canvas id="final-canvas" class="max-w-full max-h-[72vh] rounded-3xl shadow-2xl mb-8 border-4 border-white/10"></canvas>
-        <div class="flex gap-4 w-full max-w-[400px]">
-            <button onclick="location.reload()" class="flex-1 py-4 bg-zinc-900 rounded-2xl font-bold text-sm tracking-widest">RETAKE</button>
-            <button onclick="downloadResult()" class="flex-1 py-4 bg-cyan-500 text-black rounded-2xl font-bold text-sm shadow-xl shadow-cyan-500/20">SAVE MEMORY</button>
-        </div>
-    </div>
+    <a href="https://saweria.co/APONGSKY" target="_blank" id="saweria-link">☕ SUPPORT APONGSKY</a>
 
     <script>
-        let currentGrid = 4;
-        let currentTmpl = 'aboutyou';
-        let poses = [];
-        const video = document.getElementById('video-feed');
-        
-        const frames = [
-            { id: 'aboutyou', name: 'ABOUT YOU', cat: 'vibes' },
-            { id: 'spotify', name: 'SPOTIFY', cat: 'vibes' },
-            { id: 'pinterest', name: 'PINTEREST', cat: 'vibes' },
-            { id: 'classic', name: 'CLEAN', cat: 'viral' },
-            { id: 'parking', name: 'PARKING', cat: 'viral' },
-            { id: 'vhs', name: 'VHS 90S', cat: 'viral' },
-            { id: 'selfix', name: 'K-BOOTH', cat: 'viral' },
-            { id: 'vogue', name: 'VOGUE', cat: 'fashion' },
-            { id: 'hype', name: 'HYPEBEAST', cat: 'fashion' },
-            { id: 'elle', name: 'ELLE', cat: 'fashion' },
-            { id: 'kodak', name: 'KODAK', cat: 'retro' },
-            { id: 'fuji', name: 'FUJI', cat: 'retro' },
-            { id: 'thermal', name: 'HEAT', cat: 'extreme' },
-            { id: 'cctv', name: 'CCTV', cat: 'extreme' },
-            { id: 'apong_vip', name: 'VIP GOLD', cat: 'extreme' }
-        ];
+        /* --- ALL-IN-ONE JAVASCRIPT --- */
+        const video = document.getElementById('v-stream');
+        const canvas = document.getElementById('c-hidden');
+        const { jsPDF } = window.jspdf;
 
-        navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 } }).then(s => video.srcObject = s);
+        // Start Up Logic
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Loading Bar Anim
+            setTimeout(() => document.getElementById('loading-bar-fill').style.width = '100%', 200);
+            
+            // Camera Init
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                video.style.display = 'none';
+                document.getElementById('error-msg').style.display = 'block';
+            }
 
-        function init() {
-            const container = document.getElementById('frame-container');
-            container.innerHTML = frames.map(f => `
-                <div class="frame-item ${f.cat}" data-id="${f.id}" onclick="setTmpl('${f.id}', this)">
-                    ${f.name}
-                </div>
-            `).join('');
-            setTmpl('aboutyou', document.querySelector('[data-id="aboutyou"]'));
-            filterCat('vibes', document.querySelector('.tab-btn'));
+            // Close Welcome
+            setTimeout(() => {
+                const ws = document.getElementById('welcome-screen');
+                ws.style.opacity = '0';
+                setTimeout(() => ws.style.display = 'none', 1000);
+            }, 3500);
+
+            loadCounter();
+            console.log("%c STILL ALIVE V1000++ %c APONGSKY ", "color:red; background:black; font-weight:bold;", "color:black; background:white;");
+        });
+
+        async function loadCounter() {
+            try {
+                const r = await fetch('https://api.countapi.xyz/hit/apongky-stillalive/visits');
+                const d = await r.json();
+                document.getElementById('count-val').innerText = d.value.toLocaleString();
+            } catch { document.getElementById('count-val').innerText = "1,000+"; }
         }
 
-        function filterCat(cat, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.frame-item').forEach(f => {
-                f.style.display = (f.classList.contains(cat)) ? 'flex' : 'none';
+        async function doFlash() {
+            const f = document.getElementById('flash-overlay');
+            f.style.display = 'block';
+            setTimeout(() => f.style.opacity = '1', 10);
+            return new Promise(res => {
+                setTimeout(() => {
+                    f.style.opacity = '0';
+                    setTimeout(() => { f.style.display = 'none'; res(); }, 100);
+                }, 200);
             });
         }
 
-        function setTmpl(id, el) {
-            currentTmpl = id;
-            document.querySelectorAll('.frame-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+        async function captureSession(qty) {
+            let photos = [];
+            for (let i = 0; i < qty; i++) {
+                // Timer 3 detik
+                await new Promise(r => setTimeout(r, 3000));
+                await doFlash();
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                photos.push(canvas.toDataURL('image/jpeg', 0.9));
+            }
+            buildPDF(photos);
         }
 
-        function setGrid(n) {
-            currentGrid = n;
-            document.querySelectorAll('.grid-btn').forEach(b => {
-                b.classList.remove('bg-white', 'text-black');
-                if(b.innerText.includes(n)) b.classList.add('bg-white', 'text-black');
+        async function buildPDF(imgs) {
+            const doc = new jsPDF('p', 'mm', [100, 150]);
+            doc.setFillColor(10, 10, 10);
+            doc.rect(0, 0, 100, 150, 'F');
+
+            doc.setTextColor(255, 0, 0);
+            doc.setFontSize(22);
+            doc.text("STILL ALIVE", 50, 15, { align: "center", charSpace: 2 });
+
+            let x = 10, y = 25, w = 35, h = 25;
+            imgs.forEach((img, i) => {
+                doc.addImage(img, 'JPEG', x, y, w, h);
+                if (i % 2 === 0 && imgs.length > 1) { x = 55; } else { x = 10; y += h + 5; }
             });
-        }
 
-        async function startSession() {
-            poses = [];
-            const btn = document.getElementById('snap-btn');
-            btn.disabled = true; btn.innerText = "SMILE! 📸";
+            doc.setTextColor(60);
+            doc.setFontSize(7);
+            doc.text("apongky.github.io © 2026", 50, 145, { align: "center" });
 
-            for(let i=0; i<currentGrid; i++) {
-                let timer = 3;
-                const cd = document.getElementById('countdown');
-                cd.classList.remove('hidden');
-                while(timer > 0) {
-                    cd.innerText = timer;
-                    await new Promise(r => setTimeout(r, 800));
-                    timer--;
-                }
-                cd.classList.add('hidden');
-                
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
-                ctx.drawImage(video, 0, 0);
-                poses.push(canvas.toDataURL('image/jpeg'));
-                
-                document.getElementById('flash-overlay').classList.add('flash-effect');
-                setTimeout(() => document.getElementById('flash-overlay').classList.remove('flash-effect'), 150);
-                await new Promise(r => setTimeout(r, 1000));
-            }
-            renderFinal();
-        }
-
-        function roundRect(ctx, x, y, w, h, r) {
-            ctx.beginPath(); ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-            ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
-            ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
-            ctx.closePath(); ctx.fill();
-        }
-
-        async function renderFinal() {
-            const canvas = document.getElementById('final-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 1000; canvas.height = 1600;
-
-            const isDark = ['vhs','extreme','aboutyou'].includes(currentTmpl);
-            ctx.fillStyle = isDark ? '#080808' : '#fff';
-            ctx.fillRect(0,0,1000,1600);
-
-            for(let i=0; i<currentGrid; i++) {
-                const img = new Image(); img.src = poses[i];
-                await new Promise(r => img.onload = r);
-                let y = 180 + (i * (1300/currentGrid));
-                let h = (1200/currentGrid);
-                if(currentGrid === 1) ctx.drawImage(img, 100, 300, 800, 1000);
-                else if(currentGrid === 4) ctx.drawImage(img, 80, 180 + (i*340), 840, 320);
-                else {
-                    let col = i%2; let row = Math.floor(i/2);
-                    let gh = (currentGrid==6)?430:320;
-                    ctx.drawImage(img, 60 + (col*450), 180 + (row*(gh+20)), 430, gh);
-                }
-            }
-
-            // OVERLAY LOGIC
-            ctx.textAlign = "center";
-            if(currentTmpl === 'aboutyou' || currentTmpl === 'spotify') {
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
-                roundRect(ctx, 100, 1340, 800, 200, 40);
-                ctx.fillStyle = "#000"; ctx.textAlign = "left";
-                ctx.font = "bold 45px sans-serif"; ctx.fillText("About You", 160, 1410);
-                ctx.font = "25px sans-serif"; ctx.fillStyle = "#666"; ctx.fillText("The 1975 • Being Funny In A Foreign Language", 160, 1460);
-                ctx.fillStyle = "#eee"; ctx.fillRect(160, 1500, 680, 8);
-                ctx.fillStyle = "#000"; ctx.fillRect(160, 1500, 400, 8);
-            }
+            const blob = doc.output('blob');
+            const fd = new FormData();
+            fd.append('file', blob, 'stillalive.pdf');
             
-            // FOOTER BRANDING
-            ctx.globalAlpha = 0.5; ctx.textAlign = "center";
-            ctx.fillStyle = isDark ? "#fff" : "#000";
-            ctx.font = "900 14px sans-serif";
-            ctx.fillText("© 2026 APONGSKY STUDIO | v220.0 THE OBLITERATOR | SUPPORT ON SAWERIA", 500, 1585);
-            
-            document.getElementById('result-modal').classList.remove('hidden');
+            try {
+                const r = await fetch('https://file.io', { method: 'POST', body: fd });
+                const d = await r.json();
+                
+                document.getElementById('download-overlay').style.display = 'flex';
+                new QRCode(document.getElementById("qr-container"), { text: d.link, width: 200, height: 200 });
+            } catch { alert("Upload Failed, Check Internet!"); }
         }
-
-        function downloadResult() {
-            const jajan = confirm("Support Apongsky via Saweria buat update frame lainnya? Lanjut save?");
-            if(jajan) {
-                const link = document.createElement('a');
-                link.download = `apongsky-v220-${Date.now()}.jpg`;
-                link.href = document.getElementById('final-canvas').toDataURL('image/jpeg', 0.9);
-                link.click();
-            }
-        }
-        init();
     </script>
 </body>
 </html>
