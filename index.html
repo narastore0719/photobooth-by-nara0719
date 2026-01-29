@@ -3,229 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILL ALIVE PHOTOBOOTH - OFFICIAL</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>APONGSKY X STILL ALIVE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Special+Elite&family=Bangers&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --bg: #000000; --card: #111111; --text: #ffffff;
-            --accent: #ff0000; --neon: #00ff41; --spotify: #1DB954;
-        }
-
         body {
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            background: #050505; color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px; margin: 0;
         }
 
-        /* HEADER & LOGO */
-        .header { padding: 40px 20px 20px; text-align: center; }
-        .logo-text { font-size: 45px; font-weight: 900; font-style: italic; letter-spacing: -3px; margin: 0; text-transform: uppercase; }
+        .hero-section { text-align: center; margin-bottom: 15px; }
+        .hero-section h1 { letter-spacing: 2px; font-size: 20px; color: #fff; }
+        .hero-section span { color: #ff00ff; }
+        .glitch-text { color: #00ff00; text-shadow: 0 0 5px #00ff00; animation: blink 1.5s infinite; font-size: 11px; margin-top: 5px; }
+
+        /* Frame Selection */
+        .frame-selector {
+            display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;
+        }
+        .frame-thumb {
+            width: 65px; height: 90px; border: 2px solid #333;
+            cursor: pointer; border-radius: 5px; transition: 0.3s;
+            background: #111; display: flex; align-items: center; justify-content: center; font-size: 9px; text-align: center;
+        }
+        .frame-thumb.active { border-color: #ff00ff; box-shadow: 0 0 10px #ff00ff; }
+
+        /* Area Photobooth */
+        #capture-area {
+            position: relative; width: 350px; height: 900px;
+            background: #fff; overflow: hidden;
+        }
+
+        .photo-slots {
+            display: flex; flex-direction: column; height: 100%;
+            padding: 25px; gap: 18px; box-sizing: border-box;
+        }
+
+        .slot {
+            flex: 1; background: #1a1a1a; overflow: hidden;
+            display: flex; justify-content: center; align-items: center; border: 1px solid #ddd;
+        }
+
+        #webcam, .captured-img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+        #main-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; pointer-events: none; object-fit: fill;
+        }
+
+        /* Watermark di Strip */
+        .brand-permanent {
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+            font-size: 10px; font-weight: bold; color: rgba(0,0,0,0.4); z-index: 99; letter-spacing: 3px;
+        }
+
+        .control-panel { 
+            background: #111; padding: 15px; border-radius: 12px; 
+            margin-bottom: 20px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #333;
+        }
         
-        /* TICKER JALAN */
-        .ticker-container { width: 100%; background: var(--accent); color: #000; padding: 5px 0; overflow: hidden; border-y: 2px solid #000; margin-bottom: 20px; }
-        .ticker-text { white-space: nowrap; display: inline-block; animation: marquee 15s linear infinite; font-weight: 900; font-size: 14px; }
-        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        input { padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #444; background: #000; color: #00ff00; font-size: 11px; }
+        button { padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; border: none; background: #ff00ff; color: white; }
+        button:disabled { opacity: 0.5; }
 
-        /* SCREENS */
-        .screen { display: none; width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box; }
-        .active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #countdown-display {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 150px; color: #ff00ff; z-index: 1000;
+        }
 
-        /* CAMERA BOX - VIBE MAHAL */
-        .camera-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; background: #111; border: 4px solid #333; overflow: hidden; box-shadow: 0 0 30px rgba(255,0,0,0.2); }
-        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* Preview tetap mirror buat kenyamanan user */
-        .scanline-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 3px 100%; pointer-events: none; }
-        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; font-weight: 900; color: var(--neon); z-index: 10; }
+        #loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
+        }
 
-        /* UI INPUT */
-        .card { background: var(--card); padding: 25px; border: 1px solid #222; border-radius: 2px; }
-        label { font-size: 10px; color: #666; font-weight: 900; display: block; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 12px; background: #000; color: #fff; border: 1px solid #333; margin-bottom: 20px; font-weight: 900; }
-        .btn-shoot { background: #fff; color: #000; border: none; padding: 20px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-shoot:hover { background: var(--accent); color: #fff; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #ff00ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink { 50% { opacity: 0.3; } }
 
-        /* STRIP RESULT AREA (PENTING: GAK BOLEH SAMPAH) */
-        #capture-area { width: 280px; margin: auto; padding: 15px; position: relative; transition: 0.3s; }
-        #result-grid { display: flex; flex-direction: column; gap: 10px; }
-        #result-grid img { width: 100%; display: block; object-fit: cover; }
-        .footer-logo { text-align: center; padding: 15px 0 5px; font-weight: 900; border-top: 1px solid rgba(0,0,0,0.1); }
-
-        /* FRAME THEMES */
-        .frame-grunge { background: #000; color: #fff !important; border: 10px solid #111; }
-        .frame-grunge img { filter: grayscale(1) contrast(1.5); }
-        .frame-music { background: #121212; color: #fff !important; padding-bottom: 30px; }
-        .frame-gemoy { background: #ffb7c5; border: 10px solid #fff; }
-        .frame-gemoy img { border-radius: 15px; border: 3px solid #fff; }
-        .frame-newspaper { background: #e8dcc4; font-family: 'Special Elite'; border: 4px double #5d4037; }
-        .frame-cartoon { background: #ffd60a; border: 6px solid #000; font-family: 'Bangers'; }
-        .frame-cartoon img { border: 4px solid #000; box-shadow: 6px 6px 0px #000; }
-
-        .selector-box { display: flex; gap: 15px; justify-content: center; margin: 20px 0; }
-        .dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #333; cursor: pointer; transition: 0.2s; }
-        .dot:hover { transform: scale(1.2); border-color: #fff; }
-
-        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 9999; }
+        .saweria-btn { position: fixed; bottom: 20px; right: 20px; background: #faae2b; color: black; padding: 10px 15px; border-radius: 50px; font-weight: bold; text-decoration: none; font-size: 11px; z-index: 100; }
     </style>
 </head>
 <body>
 
-    <div id="flash"></div>
-
-    <div class="header">
-        <h1 class="logo-text">STILL ALIVE</h1>
+    <div class="hero-section">
+        <h1>APONGSKY <span>X</span> STILL ALIVE</h1>
+        <p class="glitch-text">[ COLLABORATION VOL. 01 ]</p>
     </div>
 
-    <div class="ticker-container">
-        <div class="ticker-text">STILL ALIVE PHOTOBOOTH OFFICIAL • NO SYSTEM FAILURE • STILL ALIVE PHOTOBOOTH OFFICIAL • NO SYSTEM FAILURE •</div>
+    <div class="frame-selector">
+        <div class="frame-thumb active" onclick="setFrame('https://i.ibb.co/m0R0m8f/strip-white.png', this)">DEFAULT<br>STRIP</div>
+        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_1', this)">CANVA<br>DESIGN 1</div>
+        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_2', this)">CANVA<br>DESIGN 2</div>
+        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_3', this)">CANVA<br>DESIGN 3</div>
     </div>
 
-    <section id="setup" class="screen active">
-        <div class="card">
-            <label>ACCESS KEY</label>
-            <input type="text" id="voucher" placeholder="OPTIONAL">
-            
-            <label>SHOTS LIMIT</label>
-            <select id="total">
-                <option value="1">1 SHOT</option>
-                <option value="4" selected>4 SHOTS (STRIP)</option>
-                <option value="6">6 SHOTS</option>
-            </select>
+    <div class="control-panel">
+        <input type="text" id="custom-url" placeholder="Paste custom PNG link...">
+        <button onclick="applyCustom()">SET</button>
+    </div>
 
-            <label>PREPARE TIME (SECONDS)</label>
-            <select id="timer">
-                <option value="3000" selected>3 SECONDS</option>
-                <option value="5000">5 SECONDS</option>
-                <option value="8000">8 SECONDS</option>
-            </select>
-
-            <button class="btn-shoot" onclick="init()">START SESSION</button>
+    <div id="capture-area">
+        <div class="photo-slots">
+            <div id="slot-1" class="slot"><video id="webcam" autoplay playsinline></video></div>
+            <div id="slot-2" class="slot"></div>
+            <div id="slot-3" class="slot"></div>
+            <div id="slot-4" class="slot"></div>
         </div>
-    </section>
+        <img id="main-frame" src="https://i.ibb.co/m0R0m8f/strip-white.png" crossorigin="anonymous">
+        <div class="brand-permanent">STILL ALIVE</div>
+    </div>
 
-    <section id="camera" class="screen">
-        <div class="camera-wrapper">
-            <div id="countdown"></div>
-            <div class="scanline-effect"></div>
-            <video id="video" autoplay playsinline></video>
-        </div>
-        <p id="info" style="text-align:center; color:var(--neon); font-weight:900; letter-spacing:3px; margin-top:20px;"></p>
-    </section>
+    <div id="countdown-display">3</div>
 
-    <section id="editor" class="screen">
-        <div id="capture-area" class="frame-grunge">
-            <div id="result-grid"></div>
-            
-            <div id="music-ui" style="display:none; padding:10px; color:#fff;">
-                <p style="margin:0; font-size:12px; font-weight:900;">STILL ALIVE - SESSION VOL. 1</p>
-                <div style="width:100%; height:3px; background:#333; margin:5px 0;"><div style="width:75%; height:100%; background:var(--spotify);"></div></div>
-            </div>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button id="start-btn" onclick="startSession()">START SESSION</button>
+        <button id="btn-download" onclick="downloadViralStrip()" style="display:none; background:#00ff00; color:#000;">SAVE STRIP</button>
+    </div>
 
-            <div class="footer-logo">
-                STILL ALIVE
-                <br><small id="sid" style="font-size:8px; opacity:0.5;"></small>
-            </div>
-        </div>
-
-        <div class="selector-box">
-            <div class="dot" style="background:#000" onclick="setFrame('grunge')"></div>
-            <div class="dot" style="background:#ffd60a" onclick="setFrame('cartoon')"></div>
-            <div class="dot" style="background:#ffb7c5" onclick="setFrame('gemoy')"></div>
-            <div class="dot" style="background:#e8dcc4" onclick="setFrame('newspaper')"></div>
-            <div class="dot" style="background:#1DB954" onclick="setFrame('music')"></div>
-        </div>
-
-        <button class="btn-shoot" onclick="download()">DOWNLOAD PDF</button>
-        <div id="qr-box" style="display:none; background:#fff; padding:15px; margin:20px auto; width:fit-content;">
-            <div id="qrcode"></div>
-        </div>
-        <button class="btn-shoot" style="background:transparent; color:#444; font-size:10px; margin-top:10px;" onclick="location.reload()">RETAKE</button>
-    </section>
-
-    <audio id="click" src="https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1133.mp3"></audio>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <div id="loading-overlay"><div class="spinner"></div></div>
+    <a href="https://saweria.co/yourusername" class="saweria-btn" target="_blank">☕ SUPPORT US</a>
 
     <script>
-        let photos = [];
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const click = document.getElementById('click');
-        const flash = document.getElementById('flash');
+        let photoCount = 0;
+        const shutterSound = new Audio('https://www.soundjay.com/mechanical/camera-shutter-click-08.mp3');
+        const video = document.getElementById('webcam');
 
-        async function init() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                video.srcObject = stream;
-                document.getElementById('setup').classList.remove('active');
-                document.getElementById('camera').classList.add('active');
-                
-                const count = parseInt(document.getElementById('total').value);
-                const delay = parseInt(document.getElementById('timer').value);
+        navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => alert("Kamera tidak aktif!"));
 
-                for(let i=0; i<count; i++) {
-                    document.getElementById('info').innerText = `READY FOR SHOT ${i+1}/${count}`;
-                    for(let j=3; j>0; j--) {
-                        document.getElementById('countdown').innerText = j;
-                        await new Promise(r => setTimeout(r, 1000));
-                    }
-                    document.getElementById('countdown').innerText = "!!!";
-                    snap();
-                    await new Promise(r => setTimeout(r, delay));
-                }
-                done();
-            } catch(e) { alert("Kamera Error Bos!"); }
+        function setFrame(url, el) {
+            document.getElementById('main-frame').src = url;
+            document.querySelectorAll('.frame-thumb').forEach(t => t.classList.remove('active'));
+            if(el) el.classList.add('active');
         }
 
-        function snap() {
-            click.play();
-            flash.style.opacity = '1'; setTimeout(() => flash.style.opacity = '0', 100);
+        function applyCustom() {
+            const url = document.getElementById('custom-url').value;
+            if(url) setFrame(url, null);
+        }
+
+        function startSession() {
+            photoCount = 0;
+            setUIState(true);
+            takeNextPhoto();
+        }
+
+        function takeNextPhoto() {
+            if (photoCount < 4) {
+                let timer = 3;
+                const display = document.getElementById('countdown-display');
+                display.style.display = 'block'; display.innerText = timer;
+                const interval = setInterval(() => {
+                    timer--; display.innerText = timer;
+                    if (timer <= 0) {
+                        clearInterval(interval); display.style.display = 'none';
+                        captureToSlot(photoCount + 1);
+                        photoCount++; setTimeout(takeNextPhoto, 1500);
+                    }
+                }, 1000);
+            } else {
+                setUIState(false);
+            }
+        }
+
+        function captureToSlot(id) {
+            shutterSound.play();
+            const slot = document.getElementById(`slot-${id}`);
+            const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth; canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
-            
-            // --- LOGIC ANTI MIRROR (BIAR GAK KEBAlIK) ---
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
+            ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0);
+            slot.innerHTML = `<img src="${canvas.toDataURL('image/png')}" class="captured-img">`;
+            if(id < 4) document.getElementById(`slot-${id+1}`).appendChild(video);
             
-            photos.push(canvas.toDataURL('image/jpeg', 0.9));
-            document.getElementById('countdown').innerText = "";
+            const f = document.createElement('div');
+            f.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;";
+            document.body.appendChild(f); setTimeout(() => f.remove(), 100);
         }
 
-        function done() {
-            document.getElementById('camera').classList.remove('active');
-            document.getElementById('editor').classList.add('active');
-            const grid = document.getElementById('result-grid');
-            photos.forEach(s => {
-                const img = document.createElement('img'); img.src = s; grid.appendChild(img);
-            });
-            document.getElementById('sid').innerText = "REF-ID: " + Math.random().toString(36).substr(2, 7).toUpperCase();
+        function setUIState(running) {
+            document.getElementById('start-btn').disabled = running;
+            document.getElementById('btn-download').style.display = running ? 'none' : 'inline-block';
         }
 
-        function setFrame(t) {
-            const area = document.getElementById('capture-area');
-            const music = document.getElementById('music-ui');
-            area.className = 'frame-' + t;
-            music.style.display = (t === 'music') ? 'block' : 'none';
-        }
-
-        async function download() {
-            const area = document.getElementById('capture-area');
-            const isMob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const cv = await html2canvas(area, { scale: 2 });
-            
-            if(isMob) {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', [80, 220]);
-                pdf.addImage(cv.toDataURL('image/png'), 'PNG', 0, 0, 80, 220);
-                pdf.save("STILLALIVE_STRIP.pdf");
-            } else {
-                document.getElementById('qr-box').style.display = 'block';
-                document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 120, height: 120 });
-            }
+        async function downloadViralStrip() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            try {
+                const canvas = await html2canvas(document.getElementById('capture-area'), { useCORS: true, scale: 3 });
+                const link = document.createElement('a');
+                link.download = `Apongsky_X_StillAlive_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png'); link.click();
+            } catch (e) { alert("Download gagal!"); }
+            document.getElementById('loading-overlay').style.display = 'none';
         }
     </script>
 </body>
