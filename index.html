@@ -6,98 +6,77 @@
     <title>APONGSKY X STILL ALIVE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --accent: #ff00ff; --bg: #050505; --card: #111; }
-        * { box-sizing: border-box; }
+        :root { --accent: #ff00ff; --bg: #050505; }
         body {
             background: var(--bg); color: white;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding: 20px; min-height: 100vh;
+            margin: 0; padding: 20px;
         }
 
-        /* Header Sleek */
+        /* Welcome Screen Mahal */
+        #welcome-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 10000; text-align: center;
+        }
+
+        .btn-luxury {
+            background: transparent; border: 1px solid var(--accent);
+            color: white; padding: 15px 40px; border-radius: 50px;
+            font-weight: bold; letter-spacing: 3px; cursor: pointer;
+            transition: 0.4s; margin-top: 20px;
+        }
+        .btn-luxury:hover { background: var(--accent); color: black; box-shadow: 0 0 30px var(--accent); }
+
+        /* Main UI */
         header { text-align: center; margin-bottom: 20px; }
-        header h1 { letter-spacing: 3px; font-size: 1.5rem; margin: 0; font-weight: 800; }
-        header span { color: var(--accent); }
-        .sub { font-size: 9px; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
-
-        /* Input Area Mahal */
+        header h1 { letter-spacing: 5px; font-size: 1.2rem; margin: 0; }
+        
         .input-card {
-            background: var(--card); border: 1px solid #222;
-            padding: 15px; border-radius: 15px; margin-bottom: 20px;
-            width: 100%; max-width: 350px; text-align: center;
+            background: #111; padding: 10px; border-radius: 12px;
+            margin-bottom: 15px; width: 100%; max-width: 350px;
+            display: flex; gap: 5px; border: 1px solid #222;
         }
-        .input-card input {
-            width: 100%; background: #000; border: 1px solid #333;
-            color: #00ff00; padding: 12px; border-radius: 8px;
-            font-size: 11px; margin-bottom: 10px; outline: none;
-        }
-        .btn-apply {
-            background: var(--accent); color: black; border: none;
-            padding: 10px 20px; border-radius: 8px; font-weight: bold;
-            cursor: pointer; font-size: 11px; width: 100%;
+        input {
+            background: #000; border: 1px solid #333; color: #00ff00;
+            flex: 1; padding: 10px; border-radius: 8px; font-size: 10px;
         }
 
-        /* Area Capture (Pusat Masalah Biasanya Di Sini) */
+        /* Area Capture */
         #capture-area {
             position: relative; width: 320px; height: 850px;
             background: #fff; overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .photo-slots {
-            display: flex; flex-direction: column; height: 100%;
-            padding: 20px; gap: 12px;
-        }
-        .slot {
-            flex: 1; background: #eee; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
-            border: 1px solid #ddd; position: relative;
-        }
+        .photo-slots { display: flex; flex-direction: column; height: 100%; padding: 20px; gap: 15px; box-sizing: border-box; }
+        .slot { flex: 1; background: #eee; overflow: hidden; display: flex; justify-content: center; align-items: center; position: relative; }
         video, .captured-img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         
-        #main-frame {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; pointer-events: none; object-fit: fill;
-        }
-        .brand-strip {
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-            font-size: 10px; font-weight: bold; color: rgba(0,0,0,0.2); 
-            z-index: 99; letter-spacing: 3px;
-        }
+        #main-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; object-fit: fill; }
+        .brand-strip { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: bold; color: rgba(0,0,0,0.2); z-index: 99; letter-spacing: 4px; }
 
-        /* Controls */
-        .btns { margin-top: 25px; display: flex; gap: 15px; }
-        .btn-action {
-            background: transparent; border: 2px solid var(--accent);
-            color: white; padding: 12px 30px; border-radius: 50px;
-            font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        .btn-action:hover { background: var(--accent); color: black; }
-        .btn-action:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        /* Overlay */
-        #countdown {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 120px;
-            font-weight: 900; color: var(--accent); z-index: 1000;
-        }
-        #loader {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;
-        }
-        .saweria { margin-top: 30px; color: #444; font-size: 10px; text-decoration: none; }
+        .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
+        
+        #countdown { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; font-weight: 900; color: var(--accent); z-index: 1000; }
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
 
+    <div id="welcome-screen">
+        <h1 style="letter-spacing: 10px;">STILL ALIVE</h1>
+        <p style="color: #444; font-size: 10px;">VIRTUAL PHOTO UNIT VOL. 01</p>
+        <button class="btn-luxury" onclick="startApp()">START CAMERA</button>
+    </div>
+
     <header>
         <h1>APONGSKY <span>X</span> STILL ALIVE</h1>
-        <div class="sub">VIRTUAL SELF-STUDIO VOL. 01</div>
     </header>
 
     <div class="input-card">
-        <input type="text" id="frame-link" placeholder="PASTE .PNG DIRECT LINK HERE">
-        <button class="btn-apply" onclick="updateFrame()">APPLY CUSTOM FRAME</button>
+        <input type="text" id="frame-link" placeholder="PASTE CUSTOM PNG FRAME LINK...">
+        <button onclick="applyFrame()" style="background:var(--accent); border:none; border-radius:5px; padding:0 10px; font-weight:bold; font-size:10px;">SET</button>
     </div>
 
     <div id="capture-area">
@@ -113,102 +92,82 @@
 
     <div id="countdown">3</div>
 
-    <div class="btns">
-        <button id="start-btn" class="btn-action" onclick="initSession()">START</button>
-        <button id="dl-btn" class="btn-action" style="display:none; border-color:#00ff00;" onclick="saveImg()">SAVE</button>
+    <div class="nav-btns">
+        <button id="start-btn" class="btn-luxury" style="font-size: 12px; padding: 10px 30px;" onclick="runSession()">TAKE PHOTOS</button>
+        <button id="dl-btn" class="btn-luxury" style="display:none; border-color:#00ff00; font-size: 12px; padding: 10px 30px;" onclick="save()">DOWNLOAD</button>
     </div>
 
-    <div id="loader"><p style="color:var(--accent); letter-spacing:2px;">RENDERING...</p></div>
-    <a href="https://saweria.co/youruser" class="saweria" target="_blank">SUPPORT VIA SAWERIA</a>
+    <div id="loader"><p style="color:var(--accent);">RENDERING HD...</p></div>
 
     <script>
         let step = 0;
         const v = document.getElementById('v');
-        const shutter = new Audio('https://www.soundjay.com/mechanical/camera-shutter-click-08.mp3');
+        const sh = new Audio('https://www.soundjay.com/mechanical/camera-shutter-click-08.mp3');
 
-        // Kamera Logic (Anti-Lag)
-        navigator.mediaDevices.getUserMedia({ video: { width: {ideal: 1280}, height: {ideal: 720} } })
-            .then(s => { v.srcObject = s; })
-            .catch(e => alert("Camera Error: Izin ditolak atau kamera tidak ditemukan."));
-
-        function updateFrame() {
-            const link = document.getElementById('frame-link').value;
-            if(link) {
-                // Tambahkan crossOrigin biar bisa di-render html2canvas
-                const frameImg = document.getElementById('main-frame');
-                frameImg.crossOrigin = "anonymous";
-                frameImg.src = link;
-                alert("Frame Updated!");
-            }
+        // Fungsi panggil kamera pas klik tombol awal
+        function startApp() {
+            navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } })
+                .then(s => { 
+                    v.srcObject = s; 
+                    document.getElementById('welcome-screen').style.display = 'none';
+                })
+                .catch(e => alert("Buka setting browser, izinkan kamera!"));
         }
 
-        function initSession() {
+        function applyFrame() {
+            const l = document.getElementById('frame-link').value;
+            if(l) document.getElementById('main-frame').src = l;
+        }
+
+        function runSession() {
             step = 0;
             document.getElementById('start-btn').disabled = true;
             document.getElementById('dl-btn').style.display = 'none';
-            // Reset slots & kembalikan video ke s1
-            for(let i=2; i<=4; i++) document.getElementById('s'+i).innerHTML = '';
+            [2,3,4].forEach(i => document.getElementById('s'+i).innerHTML = '');
             document.getElementById('s1').appendChild(v);
-            startCountdown();
+            next();
         }
 
-        function startCountdown() {
+        function next() {
             if(step < 4) {
                 let t = 3;
                 const c = document.getElementById('countdown');
                 c.style.display = 'block'; c.innerText = t;
                 const timer = setInterval(() => {
                     t--; c.innerText = t;
-                    if(t <= 0) {
+                    if(t<=0) {
                         clearInterval(timer); c.style.display = 'none';
-                        takeSnap(step + 1);
-                        step++; setTimeout(startCountdown, 1500);
+                        snap(step + 1);
+                        step++; setTimeout(next, 1500);
                     }
                 }, 1000);
             } else {
                 document.getElementById('start-btn').disabled = false;
-                document.getElementById('dl-btn').style.display = 'inline-block';
+                document.getElementById('dl-btn').style.display = 'block';
             }
         }
 
-        function takeSnap(id) {
-            shutter.play();
+        function snap(id) {
+            sh.play();
             const slot = document.getElementById('s' + id);
             const can = document.createElement('canvas');
             can.width = v.videoWidth; can.height = v.videoHeight;
             const ctx = can.getContext('2d');
-            
-            // Mirroring Fix
             ctx.translate(can.width, 0); ctx.scale(-1, 1);
             ctx.drawImage(v, 0, 0);
-            
-            const imgData = can.toDataURL('image/png');
-            slot.innerHTML = `<img src="${imgData}" class="captured-img">`;
-            
+            slot.innerHTML = `<img src="${can.toDataURL('image/png')}" style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);">`;
             if(id < 4) document.getElementById('s'+(id+1)).appendChild(v);
-
-            // Flash
-            const f = document.createElement('div');
-            f.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;";
-            document.body.appendChild(f); setTimeout(() => f.remove(), 100);
+            
+            const fl = document.createElement('div');
+            fl.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;";
+            document.body.appendChild(fl); setTimeout(() => f.remove(), 100);
         }
 
-        async function saveImg() {
+        async function save() {
             document.getElementById('loader').style.display = 'flex';
-            try {
-                const captureArea = document.getElementById('capture-area');
-                const finalCan = await html2canvas(captureArea, {
-                    useCORS: true,
-                    scale: 3, // HD Quality
-                    backgroundColor: null
-                });
-                const a = document.createElement('a');
-                a.download = `STILLALIVE_${Date.now()}.png`;
-                a.href = finalCan.toDataURL('image/png');
-                a.click();
-            } catch (e) {
-                alert("Render gagal. Pastikan link frame kamu Direct Link (.png)");
-            }
+            const can = await html2canvas(document.getElementById('capture-area'), { useCORS: true, scale: 3 });
+            const a = document.createElement('a');
+            a.download = `STILLALIVE_${Date.now()}.png`; a.href = can.toDataURL(); a.click();
             document.getElementById('loader').style.display = 'none';
         }
     </script>
