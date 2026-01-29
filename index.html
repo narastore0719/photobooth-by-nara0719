@@ -5,200 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APONGSKY X STILL ALIVE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
     <style>
+        :root { --accent: #ff00ff; --bg: #050505; }
         body {
-            background: #050505; color: white;
-            font-family: 'Courier New', Courier, monospace;
+            background: var(--bg); color: white;
+            font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            padding: 20px; margin: 0;
+            margin: 0; padding: 30px 20px;
         }
 
-        .hero-section { text-align: center; margin-bottom: 15px; }
-        .hero-section h1 { letter-spacing: 2px; font-size: 20px; color: #fff; }
-        .hero-section span { color: #ff00ff; }
-        .glitch-text { color: #00ff00; text-shadow: 0 0 5px #00ff00; animation: blink 1.5s infinite; font-size: 11px; margin-top: 5px; }
+        /* UI HEADER MAHAL */
+        header { text-align: center; margin-bottom: 25px; }
+        header h1 { letter-spacing: 5px; font-size: 20px; font-weight: 900; margin: 0; }
+        header span { color: var(--accent); }
+        .sub { font-size: 10px; color: #444; letter-spacing: 3px; margin-top: 5px; text-transform: uppercase; }
 
-        /* Frame Selection */
-        .frame-selector {
-            display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;
+        /* PANEL CUSTOM LINK */
+        .input-area {
+            background: #111; border: 1px solid #222;
+            padding: 10px; border-radius: 12px; margin-bottom: 20px;
+            width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 8px;
         }
-        .frame-thumb {
-            width: 65px; height: 90px; border: 2px solid #333;
-            cursor: pointer; border-radius: 5px; transition: 0.3s;
-            background: #111; display: flex; align-items: center; justify-content: center; font-size: 9px; text-align: center;
+        .input-group { display: flex; gap: 5px; }
+        input {
+            background: #000; border: 1px solid #333; color: #00ff00;
+            flex: 1; padding: 12px; border-radius: 8px; font-size: 11px; font-family: monospace;
         }
-        .frame-thumb.active { border-color: #ff00ff; box-shadow: 0 0 10px #ff00ff; }
+        .btn-set { background: var(--accent); color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .help-link { font-size: 10px; color: #666; text-align: center; cursor: pointer; text-decoration: underline; }
 
-        /* Area Photobooth */
+        /* STRIP AREA */
         #capture-area {
             position: relative; width: 350px; height: 900px;
-            background: #fff; overflow: hidden;
+            background: #fff; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-
-        .photo-slots {
-            display: flex; flex-direction: column; height: 100%;
-            padding: 25px; gap: 18px; box-sizing: border-box;
-        }
-
-        .slot {
-            flex: 1; background: #1a1a1a; overflow: hidden;
-            display: flex; justify-content: center; align-items: center; border: 1px solid #ddd;
-        }
-
-        #webcam, .captured-img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-
-        #main-frame {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; pointer-events: none; object-fit: fill;
-        }
-
-        /* Watermark di Strip */
-        .brand-permanent {
-            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-            font-size: 10px; font-weight: bold; color: rgba(0,0,0,0.4); z-index: 99; letter-spacing: 3px;
-        }
-
-        .control-panel { 
-            background: #111; padding: 15px; border-radius: 12px; 
-            margin-bottom: 20px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #333;
-        }
+        .photo-slots { display: flex; flex-direction: column; height: 100%; padding: 25px; gap: 15px; box-sizing: border-box; }
+        .slot { flex: 1; background: #f5f5f5; overflow: hidden; display: flex; justify-content: center; align-items: center; position: relative; }
+        video, .captured-img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         
-        input { padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #444; background: #000; color: #00ff00; font-size: 11px; }
-        button { padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; border: none; background: #ff00ff; color: white; }
-        button:disabled { opacity: 0.5; }
+        #main-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; object-fit: fill; }
+        .brand-strip { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: bold; color: rgba(0,0,0,0.2); z-index: 99; letter-spacing: 4px; }
 
-        #countdown-display {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 150px; color: #ff00ff; z-index: 1000;
-        }
+        /* CONTROLS */
+        .nav-btns { margin-top: 25px; display: flex; gap: 15px; }
+        .btn-action { background: transparent; border: 1px solid var(--accent); color: white; padding: 15px 35px; border-radius: 50px; font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+        .btn-action:hover { background: var(--accent); color: black; }
+        .btn-action:disabled { opacity: 0.2; }
 
-        #loading-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-        }
-
-        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #ff00ff; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes blink { 50% { opacity: 0.3; } }
-
-        .saweria-btn { position: fixed; bottom: 20px; right: 20px; background: #faae2b; color: black; padding: 10px 15px; border-radius: 50px; font-weight: bold; text-decoration: none; font-size: 11px; z-index: 100; }
+        /* SAWERIA & LOADER */
+        .saweria { position: fixed; bottom: 20px; left: 20px; font-size: 10px; color: #333; text-decoration: none; }
+        #countdown { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; font-weight: 900; color: var(--accent); z-index: 1000; }
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
 
-    <div class="hero-section">
+    <header>
         <h1>APONGSKY <span>X</span> STILL ALIVE</h1>
-        <p class="glitch-text">[ COLLABORATION VOL. 01 ]</p>
-    </div>
+        <div class="sub">VIRTUAL STUDIO UNIT</div>
+    </header>
 
-    <div class="frame-selector">
-        <div class="frame-thumb active" onclick="setFrame('https://i.ibb.co/m0R0m8f/strip-white.png', this)">DEFAULT<br>STRIP</div>
-        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_1', this)">CANVA<br>DESIGN 1</div>
-        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_2', this)">CANVA<br>DESIGN 2</div>
-        <div class="frame-thumb" onclick="setFrame('LINK_HASIL_CANVA_3', this)">CANVA<br>DESIGN 3</div>
-    </div>
-
-    <div class="control-panel">
-        <input type="text" id="custom-url" placeholder="Paste custom PNG link...">
-        <button onclick="applyCustom()">SET</button>
+    <div class="input-area">
+        <div class="input-group">
+            <input type="text" id="frame-link" placeholder="PASTE .PNG FRAME LINK HERE">
+            <button class="btn-set" onclick="setFrame()">SET</button>
+        </div>
+        <div class="help-link" onclick="alert('1. Di Canva: Klik Share > Download\n2. Pilih PNG + Centang Transparent Background\n3. Upload ke ImgBB.com\n4. Copy Direct Link (.png) & Paste di sini!')">
+            Gimana cara pakai desain Canva? Klik di sini.
+        </div>
     </div>
 
     <div id="capture-area">
         <div class="photo-slots">
-            <div id="slot-1" class="slot"><video id="webcam" autoplay playsinline></video></div>
-            <div id="slot-2" class="slot"></div>
-            <div id="slot-3" class="slot"></div>
-            <div id="slot-4" class="slot"></div>
+            <div id="s1" class="slot"><video id="v" autoplay playsinline></video></div>
+            <div id="s2" class="slot"></div>
+            <div id="s3" class="slot"></div>
+            <div id="s4" class="slot"></div>
         </div>
         <img id="main-frame" src="https://i.ibb.co/m0R0m8f/strip-white.png" crossorigin="anonymous">
-        <div class="brand-permanent">STILL ALIVE</div>
+        <div class="brand-strip">STILL ALIVE</div>
     </div>
 
-    <div id="countdown-display">3</div>
+    <div id="countdown">3</div>
 
-    <div style="margin-top: 20px; display: flex; gap: 10px;">
-        <button id="start-btn" onclick="startSession()">START SESSION</button>
-        <button id="btn-download" onclick="downloadViralStrip()" style="display:none; background:#00ff00; color:#000;">SAVE STRIP</button>
+    <div class="nav-btns">
+        <button id="start-btn" class="btn-action" onclick="runSession()">START</button>
+        <button id="dl-btn" class="btn-action" style="display:none; border-color:#00ff00;" onclick="save()">DOWNLOAD</button>
     </div>
 
-    <div id="loading-overlay"><div class="spinner"></div></div>
-    <a href="https://saweria.co/yourusername" class="saweria-btn" target="_blank">☕ SUPPORT US</a>
+    <div id="loader"><p style="color:var(--accent); font-weight:bold;">PROCESSING...</p></div>
+    <a href="https://saweria.co/youruser" class="saweria" target="_blank">DONATE VIA SAWERIA</a>
 
     <script>
-        let photoCount = 0;
-        const shutterSound = new Audio('https://www.soundjay.com/mechanical/camera-shutter-click-08.mp3');
-        const video = document.getElementById('webcam');
+        let step = 0;
+        const sh = new Audio('https://www.soundjay.com/mechanical/camera-shutter-click-08.mp3');
+        const v = document.getElementById('v');
 
-        navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } })
-            .then(stream => { video.srcObject = stream; })
-            .catch(err => alert("Kamera tidak aktif!"));
+        navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } }).then(s => v.srcObject = s);
 
-        function setFrame(url, el) {
-            document.getElementById('main-frame').src = url;
-            document.querySelectorAll('.frame-thumb').forEach(t => t.classList.remove('active'));
-            if(el) el.classList.add('active');
+        function setFrame() {
+            const l = document.getElementById('frame-link').value;
+            if(l) document.getElementById('main-frame').src = l;
         }
 
-        function applyCustom() {
-            const url = document.getElementById('custom-url').value;
-            if(url) setFrame(url, null);
+        function runSession() {
+            step = 0;
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('dl-btn').style.display = 'none';
+            [2,3,4].forEach(i => document.getElementById('s'+i).innerHTML = '');
+            document.getElementById('s1').appendChild(v);
+            nextSnap();
         }
 
-        function startSession() {
-            photoCount = 0;
-            setUIState(true);
-            takeNextPhoto();
-        }
-
-        function takeNextPhoto() {
-            if (photoCount < 4) {
-                let timer = 3;
-                const display = document.getElementById('countdown-display');
-                display.style.display = 'block'; display.innerText = timer;
-                const interval = setInterval(() => {
-                    timer--; display.innerText = timer;
-                    if (timer <= 0) {
-                        clearInterval(interval); display.style.display = 'none';
-                        captureToSlot(photoCount + 1);
-                        photoCount++; setTimeout(takeNextPhoto, 1500);
+        function nextSnap() {
+            if(step < 4) {
+                let t = 3;
+                const c = document.getElementById('countdown');
+                c.style.display = 'block'; c.innerText = t;
+                const timer = setInterval(() => {
+                    t--; c.innerText = t;
+                    if(t<=0) {
+                        clearInterval(timer); c.style.display = 'none';
+                        snap(step + 1);
+                        step++; setTimeout(nextSnap, 1500);
                     }
                 }, 1000);
             } else {
-                setUIState(false);
+                document.getElementById('start-btn').disabled = false;
+                document.getElementById('dl-btn').style.display = 'block';
             }
         }
 
-        function captureToSlot(id) {
-            shutterSound.play();
-            const slot = document.getElementById(`slot-${id}`);
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
-            ctx.drawImage(video, 0, 0);
-            slot.innerHTML = `<img src="${canvas.toDataURL('image/png')}" class="captured-img">`;
-            if(id < 4) document.getElementById(`slot-${id+1}`).appendChild(video);
+        function snap(id) {
+            sh.play();
+            const slot = document.getElementById('s' + id);
+            const can = document.createElement('canvas');
+            can.width = v.videoWidth; can.height = v.videoHeight;
+            const ctx = can.getContext('2d');
+            ctx.translate(can.width, 0); ctx.scale(-1, 1);
+            ctx.drawImage(v, 0, 0);
+            slot.innerHTML = `<img src="${can.toDataURL('image/png')}" style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);">`;
+            if(id < 4) document.getElementById('s'+(id+1)).appendChild(v);
             
-            const f = document.createElement('div');
-            f.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;";
-            document.body.appendChild(f); setTimeout(() => f.remove(), 100);
+            const fl = document.createElement('div');
+            fl.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:10000;";
+            document.body.appendChild(fl); setTimeout(() => fl.remove(), 100);
         }
 
-        function setUIState(running) {
-            document.getElementById('start-btn').disabled = running;
-            document.getElementById('btn-download').style.display = running ? 'none' : 'inline-block';
-        }
-
-        async function downloadViralStrip() {
-            document.getElementById('loading-overlay').style.display = 'flex';
-            try {
-                const canvas = await html2canvas(document.getElementById('capture-area'), { useCORS: true, scale: 3 });
-                const link = document.createElement('a');
-                link.download = `Apongsky_X_StillAlive_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png'); link.click();
-            } catch (e) { alert("Download gagal!"); }
-            document.getElementById('loading-overlay').style.display = 'none';
+        async function save() {
+            document.getElementById('loader').style.display = 'flex';
+            const can = await html2canvas(document.getElementById('capture-area'), { useCORS: true, scale: 3 });
+            const a = document.createElement('a');
+            a.download = `STILLALIVE_${Date.now()}.png`; a.href = can.toDataURL(); a.click();
+            document.getElementById('loader').style.display = 'none';
         }
     </script>
 </body>
